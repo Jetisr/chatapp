@@ -84,7 +84,8 @@ class UserAPI extends DataSource {
     const lowerEmail = this.lowercaseInput(email);
 
     const user = await this.repository.findOne({
-      where: [{ username: lowerUsername }, { id }, { email: lowerEmail }]
+      where: [{ username: lowerUsername }, { id }, { email: lowerEmail }],
+      relations: ["messages"]
     });
 
     if (user) {
