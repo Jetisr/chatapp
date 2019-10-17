@@ -35,7 +35,11 @@ export interface LoginResult extends Result {
   token?: string;
 }
 
-export interface Context {
+export interface BaseContext {
+  currentUser: User | undefined;
+}
+
+export interface Context extends BaseContext {
   dataSources: {
     userAPI: UserAPI;
   };
