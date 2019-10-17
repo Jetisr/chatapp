@@ -1,4 +1,4 @@
-import { DataSource } from "apollo-datasource";
+import { DataSource, DataSourceConfig } from "apollo-datasource";
 import { Repository, getRepository } from "typeorm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -8,16 +8,22 @@ import {
   LoginResult,
   CreateUserArgs,
   LoginArgs,
-  UserQueryArgs
+  UserQueryArgs,
+  BaseContext
 } from "../typescript/interfaces";
 import { JWT_SECRET } from "../utilities/config";
 
 class UserAPI extends DataSource {
   repository: Repository<User>;
+  context: BaseContext;
 
   constructor() {
     super();
     this.repository = getRepository(User);
+  }
+
+  initialize(config: DataSourceConfig<BaseContext>) {
+    this.context = config.context;
   }
 
   private lowercaseInput(input: string | undefined): string | null {
@@ -71,8 +77,7 @@ class UserAPI extends DataSource {
         message: "Incorrect password or username"
       };
     }
-
-    const token = jwt.sign({ username: user.username }, JWT_SECRET);
+    const token = jwt.sign(user.id, JWT_SECRET);
     return {
       success: true,
       token
