@@ -1,0 +1,13 @@
+{
+  "overwrite": true,
+  "schema": "./src/graphql/typeDefs.ts",
+  "documents": null,
+  "config": {
+    "useIndexSignature": true
+  },
+  "generates": {
+    "src/typescript/codegen.ts": {
+      "plugins": ["typescript", "typescript-resolvers"]
+    }
+  }
+}

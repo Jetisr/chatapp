@@ -21,16 +21,16 @@ const typeDefs = gql`
     user(username: String, email: String, id: String): User
   }
 
-  type UserCreationResult {
-    success: Boolean!
-    message: String
-    user: User
+  type Token {
+    token: String
   }
 
-  type LoginResult {
+  union ResultData = User | Token
+
+  type Result {
     success: Boolean!
     message: String
-    token: String
+    data: ResultData
   }
 
   type Mutation {
@@ -40,8 +40,8 @@ const typeDefs = gql`
       email: String!
       firstName: String
       lastName: String
-    ): UserCreationResult!
-    login(username: String, email: String, password: String!): LoginResult
+    ): Result!
+    login(username: String, email: String, password: String!): Result!
   }
 `;
 

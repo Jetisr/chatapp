@@ -3,14 +3,13 @@ import { Repository, getRepository } from "typeorm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../entities/user";
+import { BaseContext } from "../typescript/interfaces";
 import {
-  CreateUserResult,
-  LoginResult,
-  CreateUserArgs,
-  LoginArgs,
-  UserQueryArgs,
-  BaseContext
-} from "../typescript/interfaces";
+  MutationCreateUserArgs,
+  MutationLoginArgs,
+  QueryUserArgs,
+  Result
+} from "../typescript/codegen";
 import { JWT_SECRET } from "../utilities/config";
 
 class UserAPI extends DataSource {
@@ -26,7 +25,7 @@ class UserAPI extends DataSource {
     this.context = config.context;
   }
 
-  private lowercaseInput(input: string | undefined): string | null {
+  private lowercaseInput(input: string | null | undefined): string | null {
     return (input && input.toLowerCase()) || null;
   }
 
@@ -36,7 +35,7 @@ class UserAPI extends DataSource {
     password,
     firstName,
     lastName
-  }: CreateUserArgs): Promise<CreateUserResult> {
+  }: MutationCreateUserArgs): Promise<Result> {
     const user = new User();
     const passwordHash = await bcrypt.hash(password, 10);
     user.username = userName.toLowerCase();
@@ -48,11 +47,15 @@ class UserAPI extends DataSource {
 
     return {
       success: true,
-      user
+      data: user
     };
   }
 
-  async login({ email, username, password }: LoginArgs): Promise<LoginResult> {
+  async login({
+    email,
+    username,
+    password
+  }: MutationLoginArgs): Promise<Result> {
     if (!username && !email) {
       return { success: false, message: "Must provide a username or email" };
     }
@@ -80,11 +83,11 @@ class UserAPI extends DataSource {
     const token = jwt.sign(user.id, JWT_SECRET);
     return {
       success: true,
-      token
+      data: { token }
     };
   }
 
-  async findUser({ email, id, username }: UserQueryArgs): Promise<User | null> {
+  async findUser({ email, id, username }: QueryUserArgs): Promise<User | null> {
     const lowerUsername = this.lowercaseInput(username);
     const lowerEmail = this.lowercaseInput(email);
 
