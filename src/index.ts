@@ -1,9 +1,12 @@
 import { ApolloServer, gql } from "apollo-server";
 import { createConnection } from "typeorm";
+import jwt from "jsonwebtoken";
 import { Resolvers } from "./typescript/interfaces";
 import UserAPI from "./datasources/user";
+import { JWT_SECRET } from "./utilities/config";
+import User from "./entities/user";
 
-createConnection().then(() => {
+createConnection().then(connection => {
   const typeDefs = gql`
     type User {
       id: ID!
@@ -63,7 +66,17 @@ createConnection().then(() => {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    dataSources: () => ({ userAPI: new UserAPI() })
+    dataSources: () => ({ userAPI: new UserAPI() }),
+    context: async ({ req }) => {
+      const auth = req ? req.headers.authorization : null;
+      if (auth && auth.toLowerCase().startsWith("bearer ")) {
+        const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET);
+        const currentUser = await connection
+          .getRepository(User)
+          .findOne({ id: decodedToken.toString() });
+        return { currentUser };
+      }
+    }
   });
 
   server.listen().then(({ url }) => {
