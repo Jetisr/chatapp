@@ -21,6 +21,9 @@ class User {
 
   @OneToMany(() => Message, message => message.user)
   messages: Message[];
+
+  @Column()
+  passwordHash: string;
 }
 
 export default User;
