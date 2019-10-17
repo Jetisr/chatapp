@@ -25,7 +25,7 @@ const typeDefs = gql`
     token: String
   }
 
-  union ResultData = User | Token
+  union ResultData = User | Token | Message
 
   type Result {
     success: Boolean!
@@ -42,6 +42,7 @@ const typeDefs = gql`
       lastName: String
     ): Result!
     login(username: String, email: String, password: String!): Result!
+    sendMessage(messageText: String!): Result!
   }
 `;
 

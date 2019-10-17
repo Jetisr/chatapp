@@ -22,6 +22,7 @@ export type Mutation = {
    __typename?: 'Mutation',
   createUser: Result,
   login: Result,
+  sendMessage: Result,
 };
 
 
@@ -38,6 +39,11 @@ export type MutationLoginArgs = {
   username?: Maybe<Scalars['String']>,
   email?: Maybe<Scalars['String']>,
   password: Scalars['String']
+};
+
+
+export type MutationSendMessageArgs = {
+  messageText: Scalars['String']
 };
 
 export type Query = {
@@ -59,7 +65,7 @@ export type Result = {
   data?: Maybe<ResultData>,
 };
 
-export type ResultData = User | Token;
+export type ResultData = User | Token | Message;
 
 export type Token = {
    __typename?: 'Token',
@@ -157,7 +163,7 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>,
   Result: ResolverTypeWrapper<Omit<Result, 'data'> & { data?: Maybe<ResolversTypes['ResultData']> }>,
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>,
-  ResultData: ResolversTypes['User'] | ResolversTypes['Token'],
+  ResultData: ResolversTypes['User'] | ResolversTypes['Token'] | ResolversTypes['Message'],
   Token: ResolverTypeWrapper<Token>,
 }>;
 
@@ -171,7 +177,7 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {},
   Result: Omit<Result, 'data'> & { data?: Maybe<ResolversParentTypes['ResultData']> },
   Boolean: Scalars['Boolean'],
-  ResultData: ResolversParentTypes['User'] | ResolversParentTypes['Token'],
+  ResultData: ResolversParentTypes['User'] | ResolversParentTypes['Token'] | ResolversParentTypes['Message'],
   Token: Token,
 }>;
 
@@ -184,6 +190,7 @@ export type MessageResolvers<ContextType = any, ParentType extends ResolversPare
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createUser?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'userName' | 'password' | 'email'>>,
   login?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'password'>>,
+  sendMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'messageText'>>,
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
@@ -197,7 +204,7 @@ export type ResultResolvers<ContextType = any, ParentType extends ResolversParen
 }>;
 
 export type ResultDataResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResultData'] = ResolversParentTypes['ResultData']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'User' | 'Token', ParentType, ContextType>
+  __resolveType: TypeResolveFn<'User' | 'Token' | 'Message', ParentType, ContextType>
 }>;
 
 export type TokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = ResolversObject<{

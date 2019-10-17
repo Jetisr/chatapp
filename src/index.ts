@@ -6,12 +6,16 @@ import User from "./entities/user";
 import resolvers from "./graphql/resolvers";
 import typeDefs from "./graphql/typeDefs";
 import { JWT_SECRET } from "./utilities/config";
+import MessageAPI from "./datasources/message";
 
 createConnection().then(connection => {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    dataSources: () => ({ userAPI: new UserAPI() }),
+    dataSources: () => ({
+      userAPI: new UserAPI(),
+      messageAPI: new MessageAPI()
+    }),
     context: async ({ req }) => {
       const auth = req ? req.headers.authorization : null;
       if (auth && auth.toLowerCase().startsWith("bearer ")) {
