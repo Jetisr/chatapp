@@ -1,7 +1,9 @@
 import {
-  Resolvers,
   MutationResolvers,
-  QueryResolvers
+  QueryResolvers,
+  Resolvers,
+  ResultData,
+  ResultDataResolvers
 } from "../typescript/codegen";
 import { Context } from "../typescript/interfaces";
 
@@ -15,9 +17,20 @@ const Query: QueryResolvers<Context> = {
   user: (root, args, { dataSources }) => dataSources.userAPI.findUser(args)
 };
 
+const ResultData: ResultDataResolvers = {
+  __resolveType: root => {
+    if ("username" in root) {
+      return "User";
+    }
+
+    return "Token";
+  }
+};
+
 const resolvers: Resolvers<Context> = {
   Mutation,
-  Query
+  Query,
+  ResultData
 };
 
 export default resolvers;
