@@ -14,6 +14,10 @@ class UserAPI extends DataSource {
     this.repository = getRepository(User);
   }
 
+  private lowercaseInput(input: string | undefined): string | null {
+    return (input && input.toLowerCase()) || null;
+  }
+
   async createUser(
     userName: string,
     password: string,
@@ -23,8 +27,8 @@ class UserAPI extends DataSource {
   ): Promise<CreateUserResult> {
     const user = new User();
     const passwordHash = await bcrypt.hash(password, 10);
-    user.username = userName;
-    user.email = email;
+    user.username = userName.toLowerCase();
+    user.email = email.toLowerCase();
     user.passwordHash = passwordHash;
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
@@ -45,8 +49,10 @@ class UserAPI extends DataSource {
       return { success: false, message: "Must provide a username or email" };
     }
 
+    const lowerUsername = this.lowercaseInput(username);
+    const lowerEmail = this.lowercaseInput(email);
     const user = await this.repository.findOne({
-      where: [{ username }, { email }]
+      where: [{ username: lowerUsername }, { email: lowerEmail }]
     });
 
     if (!user) {
@@ -76,8 +82,11 @@ class UserAPI extends DataSource {
     email?: string,
     id?: string
   ): Promise<User | null> {
+    const lowerUsername = this.lowercaseInput(username);
+    const lowerEmail = this.lowercaseInput(email);
+
     const user = await this.repository.findOne({
-      where: [{ username }, { id }, { email }]
+      where: [{ username: lowerUsername }, { id }, { email: lowerEmail }]
     });
 
     if (user) {
