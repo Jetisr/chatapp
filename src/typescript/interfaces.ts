@@ -2,13 +2,13 @@ import { IResolvers } from "graphql-tools";
 import User from "../entities/user";
 import UserAPI from "../datasources/user";
 
-interface UserQueryArgs {
+export interface UserQueryArgs {
   username?: string;
   email?: string;
   id?: string;
 }
 
-interface CreateUserArgs {
+export interface CreateUserArgs {
   userName: string;
   email: string;
   password: string;
@@ -16,7 +16,7 @@ interface CreateUserArgs {
   lastName?: string;
 }
 
-interface LoginArgs {
+export interface LoginArgs {
   password: string;
   username?: string;
   email?: string;

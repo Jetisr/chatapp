@@ -3,7 +3,13 @@ import { Repository, getRepository } from "typeorm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../entities/user";
-import { CreateUserResult, LoginResult } from "../typescript/interfaces";
+import {
+  CreateUserResult,
+  LoginResult,
+  CreateUserArgs,
+  LoginArgs,
+  UserQueryArgs
+} from "../typescript/interfaces";
 import { JWT_SECRET } from "../utilities/config";
 
 class UserAPI extends DataSource {
@@ -18,13 +24,13 @@ class UserAPI extends DataSource {
     return (input && input.toLowerCase()) || null;
   }
 
-  async createUser(
-    userName: string,
-    password: string,
-    email: string,
-    firstName?: string,
-    lastName?: string
-  ): Promise<CreateUserResult> {
+  async createUser({
+    userName,
+    email,
+    password,
+    firstName,
+    lastName
+  }: CreateUserArgs): Promise<CreateUserResult> {
     const user = new User();
     const passwordHash = await bcrypt.hash(password, 10);
     user.username = userName.toLowerCase();
@@ -40,11 +46,7 @@ class UserAPI extends DataSource {
     };
   }
 
-  async login(
-    password: string,
-    username?: string,
-    email?: string
-  ): Promise<LoginResult> {
+  async login({ email, username, password }: LoginArgs): Promise<LoginResult> {
     if (!username && !email) {
       return { success: false, message: "Must provide a username or email" };
     }
@@ -77,11 +79,7 @@ class UserAPI extends DataSource {
     };
   }
 
-  async findUser(
-    username?: string,
-    email?: string,
-    id?: string
-  ): Promise<User | null> {
+  async findUser({ email, id, username }: UserQueryArgs): Promise<User | null> {
     const lowerUsername = this.lowercaseInput(username);
     const lowerEmail = this.lowercaseInput(email);
 

@@ -52,19 +52,11 @@ createConnection().then(() => {
   const resolvers: Resolvers = {
     Mutation: {
       createUser: (root, args, { dataSources }) =>
-        dataSources.userAPI.createUser(
-          args.userName,
-          args.password,
-          args.email,
-          args.firstName,
-          args.lastName
-        ),
-      login: (root, args, { dataSources }) =>
-        dataSources.userAPI.login(args.password, args.username, args.email)
+        dataSources.userAPI.createUser(args),
+      login: (root, args, { dataSources }) => dataSources.userAPI.login(args)
     },
     Query: {
-      user: (root, args, { dataSources }) =>
-        dataSources.userAPI.findUser(args.username, args.email, args.id)
+      user: (root, args, { dataSources }) => dataSources.userAPI.findUser(args)
     }
   };
 
