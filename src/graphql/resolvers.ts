@@ -16,7 +16,8 @@ const Mutation: MutationResolvers<Context> = {
 };
 
 const Query: QueryResolvers<Context> = {
-  user: (root, args, { dataSources }) => dataSources.userAPI.findUser(args)
+  user: (root, args, { dataSources }) => dataSources.userAPI.findUser(args),
+  me: (root, args, { currentUser }) => currentUser || null
 };
 
 const ResultData: ResultDataResolvers = {

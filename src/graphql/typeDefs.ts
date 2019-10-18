@@ -19,6 +19,7 @@ const typeDefs = gql`
 
   type Query {
     user(username: String, email: String, id: String): User
+    me: User
   }
 
   type Token {
