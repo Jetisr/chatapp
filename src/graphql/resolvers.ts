@@ -2,7 +2,6 @@ import {
   MutationResolvers,
   QueryResolvers,
   Resolvers,
-  ResultData,
   ResultDataResolvers
 } from "../typescript/codegen";
 import { Context } from "../typescript/interfaces";

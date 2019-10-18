@@ -1,4 +1,3 @@
-import { IResolvers } from "graphql-tools";
 import User from "../entities/user";
 import UserAPI from "../datasources/user";
 import MessageAPI from "../datasources/message";

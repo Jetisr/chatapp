@@ -42,7 +42,7 @@ const typeDefs = gql`
       firstName: String
       lastName: String
     ): Result!
-    login(username: String, email: String, password: String!): Result!
+    login(login: String!, password: String!): Result!
     sendMessage(messageText: String!): Result!
   }
 `;

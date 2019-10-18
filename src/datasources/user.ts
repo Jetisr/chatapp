@@ -14,6 +14,7 @@ import { JWT_SECRET } from "../utilities/config";
 
 class UserAPI extends DataSource {
   repository: Repository<User>;
+
   context: BaseContext;
 
   constructor() {
@@ -51,25 +52,20 @@ class UserAPI extends DataSource {
     };
   }
 
-  async login({
-    email,
-    username,
-    password
-  }: MutationLoginArgs): Promise<Result> {
-    if (!username && !email) {
-      return { success: false, message: "Must provide a username or email" };
+  async login({ login, password }: MutationLoginArgs): Promise<Result> {
+    if (!login) {
+      return { success: false, message: "Must provide a login" };
     }
 
-    const lowerUsername = this.lowercaseInput(username);
-    const lowerEmail = this.lowercaseInput(email);
+    const lowerLogin = this.lowercaseInput(login);
     const user = await this.repository.findOne({
-      where: [{ username: lowerUsername }, { email: lowerEmail }]
+      where: [{ username: lowerLogin }, { email: lowerLogin }]
     });
 
     if (!user) {
       return {
         success: false,
-        message: "Incorrect password or username"
+        message: "Incorrect password or login"
       };
     }
 
@@ -77,7 +73,7 @@ class UserAPI extends DataSource {
     if (!passwordCorrect) {
       return {
         success: false,
-        message: "Incorrect password or username"
+        message: "Incorrect password or login"
       };
     }
     const token = jwt.sign(user.id, JWT_SECRET);

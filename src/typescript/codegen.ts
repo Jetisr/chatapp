@@ -36,8 +36,7 @@ export type MutationCreateUserArgs = {
 
 
 export type MutationLoginArgs = {
-  username?: Maybe<Scalars['String']>,
-  email?: Maybe<Scalars['String']>,
+  login: Scalars['String'],
   password: Scalars['String']
 };
 
@@ -190,7 +189,7 @@ export type MessageResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createUser?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'userName' | 'password' | 'email'>>,
-  login?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'password'>>,
+  login?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'login' | 'password'>>,
   sendMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'messageText'>>,
 }>;
 
