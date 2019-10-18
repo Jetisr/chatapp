@@ -22,7 +22,10 @@ createConnection().then(connection => {
         const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET);
         const currentUser = await connection
           .getRepository(User)
-          .findOne({ id: decodedToken.toString() });
+          .findOne(
+            { id: decodedToken.toString() },
+            { relations: ["messages", "messages.user"] }
+          );
         return { currentUser };
       }
     }
