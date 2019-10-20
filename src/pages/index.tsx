@@ -1,8 +1,8 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import UserAuth from "./UserAuth";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { PrivateRoute } from "../components";
 import ChatRoom from "./ChatRoom";
+import UserAuth from "./UserAuth";
 
 const Pages: React.FC = () => (
   <Router>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Redirect, useLocation, RouteProps } from "react-router-dom";
+import { Redirect, Route, RouteProps, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks";
 
 const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
