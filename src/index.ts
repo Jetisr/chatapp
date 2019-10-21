@@ -31,7 +31,8 @@ createConnection().then(connection => {
     }
   });
 
-  server.listen().then(({ url }) => {
+  server.listen().then(({ url, subscriptionsUrl }) => {
     console.log(`Apollo running on ${url}`);
+    console.log(`Subscriptions available at ${subscriptionsUrl}`);
   });
 });

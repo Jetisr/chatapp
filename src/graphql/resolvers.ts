@@ -1,17 +1,27 @@
+import { PubSub } from "apollo-server";
 import {
   MutationResolvers,
   QueryResolvers,
   Resolvers,
-  ResultDataResolvers
+  ResultDataResolvers,
+  SubscriptionResolvers
 } from "../typescript/codegen";
 import { Context } from "../typescript/interfaces";
+
+const pubsub = new PubSub();
 
 const Mutation: MutationResolvers<Context> = {
   createUser: (root, args, { dataSources }) =>
     dataSources.userAPI.createUser(args),
   login: (root, args, { dataSources }) => dataSources.userAPI.login(args),
-  sendMessage: (root, args, { dataSources }) =>
-    dataSources.messageAPI.sendMessage(args)
+  sendMessage: async (root, args, { dataSources }) => {
+    const messageResult = await dataSources.messageAPI.sendMessage(args);
+    if (messageResult.success && messageResult.data) {
+      pubsub.publish("MESSAGE_ADDED", { messageAdded: messageResult.data });
+    }
+
+    return messageResult;
+  }
 };
 
 const Query: QueryResolvers<Context> = {
@@ -27,13 +37,24 @@ const ResultData: ResultDataResolvers = {
       return "User";
     }
 
+    if ("messageText" in root) {
+      return "Message";
+    }
+
     return "Token";
+  }
+};
+
+const Subscription: SubscriptionResolvers = {
+  messageAdded: {
+    subscribe: () => pubsub.asyncIterator(["MESSAGE_ADDED"])
   }
 };
 
 const resolvers: Resolvers<Context> = {
   Mutation,
   Query,
+  Subscription,
   ResultData
 };
 

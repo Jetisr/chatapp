@@ -68,6 +68,11 @@ export type Result = {
 
 export type ResultData = User | Token | Message;
 
+export type Subscription = {
+   __typename?: 'Subscription',
+  messageAdded: Message,
+};
+
 export type Token = {
    __typename?: 'Token',
   token?: Maybe<Scalars['String']>,
@@ -166,6 +171,7 @@ export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>,
   ResultData: ResolversTypes['User'] | ResolversTypes['Token'] | ResolversTypes['Message'],
   Token: ResolverTypeWrapper<Token>,
+  Subscription: ResolverTypeWrapper<{}>,
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -180,6 +186,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'],
   ResultData: ResolversParentTypes['User'] | ResolversParentTypes['Token'] | ResolversParentTypes['Message'],
   Token: Token,
+  Subscription: {},
 }>;
 
 export type MessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = ResolversObject<{
@@ -210,6 +217,10 @@ export type ResultDataResolvers<ContextType = any, ParentType extends ResolversP
   __resolveType: TypeResolveFn<'User' | 'Token' | 'Message', ParentType, ContextType>
 }>;
 
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  messageAdded?: SubscriptionResolver<ResolversTypes['Message'], "messageAdded", ParentType, ContextType>,
+}>;
+
 export type TokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = ResolversObject<{
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 }>;
@@ -230,6 +241,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Query?: QueryResolvers<ContextType>,
   Result?: ResultResolvers<ContextType>,
   ResultData?: ResultDataResolvers,
+  Subscription?: SubscriptionResolvers<ContextType>,
   Token?: TokenResolvers<ContextType>,
   User?: UserResolvers<ContextType>,
 }>;
