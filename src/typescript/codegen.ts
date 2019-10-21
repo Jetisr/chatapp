@@ -49,6 +49,7 @@ export type Query = {
    __typename?: 'Query',
   user?: Maybe<User>,
   me?: Maybe<User>,
+  allMessages: Array<Message>,
 };
 
 
@@ -196,6 +197,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, QueryUserArgs>,
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
+  allMessages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>,
 }>;
 
 export type ResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['Result'] = ResolversParentTypes['Result']> = ResolversObject<{

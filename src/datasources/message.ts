@@ -5,8 +5,9 @@ import { BaseContext } from "../typescript/interfaces";
 import { MutationSendMessageArgs, Result } from "../typescript/codegen";
 
 class MessageAPI extends DataSource {
-  repository: Repository<Message>;
-  context: BaseContext;
+  private repository: Repository<Message>;
+
+  private context: BaseContext;
 
   constructor() {
     super();
@@ -34,6 +35,10 @@ class MessageAPI extends DataSource {
       success: true,
       data: message
     };
+  }
+
+  async allMessages(): Promise<Message[]> {
+    return this.repository.find({ relations: ["user"] });
   }
 }
 
