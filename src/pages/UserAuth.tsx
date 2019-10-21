@@ -164,6 +164,26 @@ const CreateAccountForm: React.FC = () => {
             variant="outlined"
             className={classes.textField}
             type={showPassword ? "text" : "password"}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    edge="end"
+                    aria-label="toggle password visibility"
+                    onClick={() => setShowPassword(current => !current)}
+                    onMouseDown={event => {
+                      event.preventDefault();
+                    }}
+                  >
+                    {showPassword ? (
+                      <VisibilityOffOutlined />
+                    ) : (
+                      <VisibilityOutlined />
+                    )}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
             required
           />
           <TextField
