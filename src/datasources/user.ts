@@ -1,5 +1,5 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import { Repository, getRepository } from "typeorm";
+import { Repository, getRepository, QueryFailedError } from "typeorm";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../entities/user";
@@ -26,7 +26,9 @@ class UserAPI extends DataSource {
     this.context = config.context;
   }
 
-  private lowercaseInput(input: string | null | undefined): string | null {
+  private static lowercaseInput(
+    input: string | null | undefined
+  ): string | null {
     return (input && input.toLowerCase()) || null;
   }
 
@@ -44,11 +46,36 @@ class UserAPI extends DataSource {
     user.passwordHash = passwordHash;
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
-    await this.repository.save(user);
+    try {
+      await this.repository.save(user);
+    } catch (e) {
+      if (e.message.includes("UNIQUE constraint failed")) {
+        const regex = new RegExp(/user\.(.+)$/);
+        const regexResult = regex.exec(e.message);
+        const match = (regexResult && regexResult[1]) || "";
+        switch (match) {
+          case "username":
+            return {
+              success: false,
+              message: "Username must be unique"
+            };
+          case "email":
+            return {
+              success: false,
+              message: "Email must be unique"
+            };
+          default:
+            return {
+              success: false,
+              message: e.message
+            };
+        }
+      }
+    }
 
     return {
       success: true,
-      data: user
+      data: { ...user, messages: [] }
     };
   }
 
@@ -57,7 +84,7 @@ class UserAPI extends DataSource {
       return { success: false, message: "Must provide a login" };
     }
 
-    const lowerLogin = this.lowercaseInput(login);
+    const lowerLogin = UserAPI.lowercaseInput(login);
     const user = await this.repository.findOne({
       where: [{ username: lowerLogin }, { email: lowerLogin }]
     });
@@ -84,8 +111,8 @@ class UserAPI extends DataSource {
   }
 
   async findUser({ email, id, username }: QueryUserArgs): Promise<User | null> {
-    const lowerUsername = this.lowercaseInput(username);
-    const lowerEmail = this.lowercaseInput(email);
+    const lowerUsername = UserAPI.lowercaseInput(username);
+    const lowerEmail = UserAPI.lowercaseInput(email);
 
     const user = await this.repository.findOne({
       where: [{ username: lowerUsername }, { id }, { email: lowerEmail }],
