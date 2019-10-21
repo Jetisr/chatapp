@@ -106,3 +106,32 @@ export type LoginMutation = (
     ) | { __typename?: 'Message' }> }
   ) }
 );
+
+export type CreateAccountMutationVariables = {
+  username: Scalars['String'],
+  email: Scalars['String'],
+  password: Scalars['String'],
+  firstName?: Maybe<Scalars['String']>,
+  lastName?: Maybe<Scalars['String']>
+};
+
+
+export type CreateAccountMutation = (
+  { __typename?: 'Mutation' }
+  & { createUser: (
+    { __typename?: 'Result' }
+    & Pick<Result, 'success' | 'message'>
+    & { data: Maybe<(
+      { __typename?: 'User' }
+      & Pick<User, 'email' | 'firstName' | 'id' | 'lastName' | 'username'>
+      & { messages: Array<(
+        { __typename?: 'Message' }
+        & Pick<Message, 'id'>
+        & { user: (
+          { __typename?: 'User' }
+          & Pick<User, 'id'>
+        ) }
+      )> }
+    ) | { __typename?: 'Token' } | { __typename?: 'Message' }> }
+  ) }
+);
