@@ -1,3 +1,4 @@
+import Layout from "./Layout";
 import PrivateRoute from "./PrivateRoute";
 
-export { PrivateRoute };
+export { Layout, PrivateRoute };
