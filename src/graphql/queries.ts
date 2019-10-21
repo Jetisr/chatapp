@@ -17,3 +17,16 @@ export const ME = gql`
     }
   }
 `;
+
+export const ALL_MESSAGES = gql`
+  query allMessages {
+    allMessages {
+      id
+      messageText
+      user {
+        id
+        username
+      }
+    }
+  }
+`;

@@ -54,6 +54,7 @@ export type Query = {
    __typename?: 'Query',
   user?: Maybe<User>,
   me?: Maybe<User>,
+  allMessages: Array<Message>,
 };
 
 
@@ -134,4 +135,38 @@ export type CreateAccountMutation = (
       )> }
     ) | { __typename?: 'Token' } | { __typename?: 'Message' }> }
   ) }
+);
+
+export type MeQueryVariables = {};
+
+
+export type MeQuery = (
+  { __typename?: 'Query' }
+  & { me: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'email' | 'firstName' | 'id' | 'lastName' | 'username'>
+    & { messages: Array<(
+      { __typename?: 'Message' }
+      & Pick<Message, 'id'>
+      & { user: (
+        { __typename?: 'User' }
+        & Pick<User, 'id'>
+      ) }
+    )> }
+  )> }
+);
+
+export type AllMessagesQueryVariables = {};
+
+
+export type AllMessagesQuery = (
+  { __typename?: 'Query' }
+  & { allMessages: Array<(
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'messageText'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  )> }
 );
