@@ -26,7 +26,7 @@ const errorHandler = onError(({ graphQLErrors, networkError }): void => {
 });
 
 const authLink = setContext((operation, { headers }) => {
-  const token = localStorage.getItem("userToken");
+  const token = localStorage.getItem("token");
   return {
     headers: {
       ...headers,
