@@ -73,6 +73,11 @@ export type Result = {
 
 export type ResultData = User | Token | Message;
 
+export type Subscription = {
+   __typename?: 'Subscription',
+  messageAdded: Message,
+};
+
 export type Token = {
    __typename?: 'Token',
   token?: Maybe<Scalars['String']>,
@@ -169,4 +174,19 @@ export type AllMessagesQuery = (
       & Pick<User, 'id' | 'username'>
     ) }
   )> }
+);
+
+export type NewMessagesSubscriptionVariables = {};
+
+
+export type NewMessagesSubscription = (
+  { __typename?: 'Subscription' }
+  & { messageAdded: (
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'messageText'>
+    & { user: (
+      { __typename?: 'User' }
+      & Pick<User, 'id' | 'username'>
+    ) }
+  ) }
 );
