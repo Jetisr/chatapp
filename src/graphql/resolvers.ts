@@ -28,7 +28,15 @@ const Query: QueryResolvers<Context> = {
   user: (root, args, { dataSources }) => dataSources.userAPI.findUser(args),
   me: (root, args, { currentUser }) => currentUser || null,
   allMessages: (root, args, { dataSources }) =>
-    dataSources.messageAPI.allMessages()
+    dataSources.messageAPI.allMessages(),
+  message: async (root, args, { dataSources }) => {
+    try {
+      const resp = await dataSources.messageAPI.findMessage(args.messageId);
+      return resp;
+    } catch (e) {
+      return null;
+    }
+  }
 };
 
 const ResultData: ResultDataResolvers = {

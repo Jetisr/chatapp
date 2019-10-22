@@ -50,6 +50,7 @@ export type Query = {
   user?: Maybe<User>,
   me?: Maybe<User>,
   allMessages: Array<Message>,
+  message?: Maybe<Message>,
 };
 
 
@@ -57,6 +58,11 @@ export type QueryUserArgs = {
   username?: Maybe<Scalars['String']>,
   email?: Maybe<Scalars['String']>,
   id?: Maybe<Scalars['String']>
+};
+
+
+export type QueryMessageArgs = {
+  messageId: Scalars['ID']
 };
 
 export type Result = {
@@ -205,6 +211,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, QueryUserArgs>,
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
   allMessages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessageArgs, 'messageId'>>,
 }>;
 
 export type ResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['Result'] = ResolversParentTypes['Result']> = ResolversObject<{

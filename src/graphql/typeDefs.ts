@@ -21,6 +21,7 @@ const typeDefs = gql`
     user(username: String, email: String, id: String): User
     me: User
     allMessages: [Message!]!
+    message(messageId: ID!): Message
   }
 
   type Token {

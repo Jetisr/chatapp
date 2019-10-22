@@ -40,6 +40,10 @@ class MessageAPI extends DataSource {
   async allMessages(): Promise<Message[]> {
     return this.repository.find({ relations: ["user"] });
   }
+
+  async findMessage(messageId: string): Promise<Message> {
+    return this.repository.findOneOrFail(messageId, { relations: ["user"] });
+  }
 }
 
 export default MessageAPI;
