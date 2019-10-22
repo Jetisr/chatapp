@@ -55,6 +55,7 @@ export type Query = {
   user?: Maybe<User>,
   me?: Maybe<User>,
   allMessages: Array<Message>,
+  message?: Maybe<Message>,
 };
 
 
@@ -62,6 +63,11 @@ export type QueryUserArgs = {
   username?: Maybe<Scalars['String']>,
   email?: Maybe<Scalars['String']>,
   id?: Maybe<Scalars['String']>
+};
+
+
+export type QueryMessageArgs = {
+  messageId: Scalars['ID']
 };
 
 export type Result = {
@@ -94,6 +100,15 @@ export type User = {
   passwordHash: Scalars['String'],
   messages: Array<Message>,
 };
+
+export type MessageListMessageFragment = (
+  { __typename?: 'Message' }
+  & Pick<Message, 'id' | 'messageText'>
+  & { user: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+  ) }
+);
 
 export type LoginMutationVariables = {
   login: Scalars['String'],
@@ -168,10 +183,23 @@ export type AllMessagesQuery = (
   { __typename?: 'Query' }
   & { allMessages: Array<(
     { __typename?: 'Message' }
+    & MessageListMessageFragment
+  )> }
+);
+
+export type MessageQueryVariables = {
+  messageId: Scalars['ID']
+};
+
+
+export type MessageQuery = (
+  { __typename?: 'Query' }
+  & { message: Maybe<(
+    { __typename?: 'Message' }
     & Pick<Message, 'id' | 'messageText'>
     & { user: (
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
+      & Pick<User, 'firstName' | 'lastName' | 'username' | 'email' | 'id'>
     ) }
   )> }
 );

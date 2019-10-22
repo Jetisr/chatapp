@@ -1,4 +1,5 @@
 import gql from "graphql-tag";
+import { MessageListMessageFragment } from "./fragments";
 
 export const ME = gql`
   query me {
@@ -21,11 +22,24 @@ export const ME = gql`
 export const ALL_MESSAGES = gql`
   query allMessages {
     allMessages {
+      ...MessageListMessage
+    }
+  }
+
+  ${MessageListMessageFragment}
+`;
+
+export const MESSAGE = gql`
+  query message($messageId: ID!) {
+    message(messageId: $messageId) {
       id
       messageText
       user {
-        id
+        firstName
+        lastName
         username
+        email
+        id
       }
     }
   }
