@@ -65,3 +65,18 @@ export const DELETE_MESSAGE = gql`
     }
   }
 `;
+
+export const EDIT_MESSAGE = gql`
+  mutation editMessage($messageId: ID!, $updatedText: String!) {
+    editMessage(messageId: $messageId, updatedText: $updatedText) {
+      message
+      success
+      ... on EditMessageResult {
+        editedMessage {
+          id
+          messageText
+        }
+      }
+    }
+  }
+`;

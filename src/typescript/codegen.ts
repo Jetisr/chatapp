@@ -29,6 +29,13 @@ export type DeleteMessageResult = Result & {
   message?: Maybe<Scalars['String']>,
 };
 
+export type EditMessageResult = Result & {
+   __typename?: 'EditMessageResult',
+  success: Scalars['Boolean'],
+  message?: Maybe<Scalars['String']>,
+  editedMessage?: Maybe<Message>,
+};
+
 export type LoginResult = Result & {
    __typename?: 'LoginResult',
   success: Scalars['Boolean'],
@@ -49,6 +56,7 @@ export type Mutation = {
   login: Result,
   sendMessage: Result,
   deleteMessage: Result,
+  editMessage: Result,
 };
 
 
@@ -76,6 +84,12 @@ export type MutationDeleteMessageArgs = {
   messageId: Scalars['ID']
 };
 
+
+export type MutationEditMessageArgs = {
+  messageId: Scalars['ID'],
+  updatedText: Scalars['String']
+};
+
 export type Query = {
    __typename?: 'Query',
   user?: Maybe<User>,
@@ -89,6 +103,12 @@ export type QueryUserArgs = {
   username?: Maybe<Scalars['String']>,
   email?: Maybe<Scalars['String']>,
   id?: Maybe<Scalars['String']>
+};
+
+
+export type QueryAllMessagesArgs = {
+  email?: Maybe<Scalars['String']>,
+  username?: Maybe<Scalars['String']>
 };
 
 
@@ -154,6 +174,9 @@ export type LoginMutation = (
     { __typename?: 'DeleteMessageResult' }
     & Pick<DeleteMessageResult, 'message' | 'success'>
   ) | (
+    { __typename?: 'EditMessageResult' }
+    & Pick<EditMessageResult, 'message' | 'success'>
+  ) | (
     { __typename?: 'LoginResult' }
     & Pick<LoginResult, 'token' | 'message' | 'success'>
   ) | (
@@ -192,6 +215,9 @@ export type CreateAccountMutation = (
     { __typename?: 'DeleteMessageResult' }
     & Pick<DeleteMessageResult, 'success' | 'message'>
   ) | (
+    { __typename?: 'EditMessageResult' }
+    & Pick<EditMessageResult, 'success' | 'message'>
+  ) | (
     { __typename?: 'LoginResult' }
     & Pick<LoginResult, 'success' | 'message'>
   ) | (
@@ -213,6 +239,9 @@ export type SendMessageMutation = (
   ) | (
     { __typename?: 'DeleteMessageResult' }
     & Pick<DeleteMessageResult, 'success' | 'message'>
+  ) | (
+    { __typename?: 'EditMessageResult' }
+    & Pick<EditMessageResult, 'success' | 'message'>
   ) | (
     { __typename?: 'LoginResult' }
     & Pick<LoginResult, 'success' | 'message'>
@@ -236,11 +265,44 @@ export type DeleteMessageMutation = (
     { __typename?: 'DeleteMessageResult' }
     & Pick<DeleteMessageResult, 'success' | 'message'>
   ) | (
+    { __typename?: 'EditMessageResult' }
+    & Pick<EditMessageResult, 'success' | 'message'>
+  ) | (
     { __typename?: 'LoginResult' }
     & Pick<LoginResult, 'success' | 'message'>
   ) | (
     { __typename?: 'SendMessageResult' }
     & Pick<SendMessageResult, 'success' | 'message'>
+  ) }
+);
+
+export type EditMessageMutationVariables = {
+  messageId: Scalars['ID'],
+  updatedText: Scalars['String']
+};
+
+
+export type EditMessageMutation = (
+  { __typename?: 'Mutation' }
+  & { editMessage: (
+    { __typename?: 'CreateUserResult' }
+    & Pick<CreateUserResult, 'message' | 'success'>
+  ) | (
+    { __typename?: 'DeleteMessageResult' }
+    & Pick<DeleteMessageResult, 'message' | 'success'>
+  ) | (
+    { __typename?: 'EditMessageResult' }
+    & Pick<EditMessageResult, 'message' | 'success'>
+    & { editedMessage: Maybe<(
+      { __typename?: 'Message' }
+      & Pick<Message, 'id' | 'messageText'>
+    )> }
+  ) | (
+    { __typename?: 'LoginResult' }
+    & Pick<LoginResult, 'message' | 'success'>
+  ) | (
+    { __typename?: 'SendMessageResult' }
+    & Pick<SendMessageResult, 'message' | 'success'>
   ) }
 );
 
