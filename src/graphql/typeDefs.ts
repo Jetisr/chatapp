@@ -28,6 +28,12 @@ const typeDefs = gql`
     success: Boolean!
     message: String
   }
+
+  type EditMessageResult implements Result {
+    success: Boolean!
+    message: String
+    editedMessage: Message
+  }
   type User {
     id: ID!
     username: String!
@@ -75,6 +81,7 @@ const typeDefs = gql`
     login(login: String!, password: String!): Result!
     sendMessage(messageText: String!): Result!
     deleteMessage(messageId: ID!): Result!
+    editMessage(messageId: ID!, updatedText: String!): Result!
   }
 
   type Subscription {

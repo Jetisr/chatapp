@@ -23,6 +23,13 @@ export type DeleteMessageResult = Result & {
   message?: Maybe<Scalars['String']>,
 };
 
+export type EditMessageResult = Result & {
+   __typename?: 'EditMessageResult',
+  success: Scalars['Boolean'],
+  message?: Maybe<Scalars['String']>,
+  editedMessage?: Maybe<Message>,
+};
+
 export type LoginResult = Result & {
    __typename?: 'LoginResult',
   success: Scalars['Boolean'],
@@ -43,6 +50,7 @@ export type Mutation = {
   login: Result,
   sendMessage: Result,
   deleteMessage: Result,
+  editMessage: Result,
 };
 
 
@@ -68,6 +76,12 @@ export type MutationSendMessageArgs = {
 
 export type MutationDeleteMessageArgs = {
   messageId: Scalars['ID']
+};
+
+
+export type MutationEditMessageArgs = {
+  messageId: Scalars['ID'],
+  updatedText: Scalars['String']
 };
 
 export type Query = {
@@ -214,6 +228,7 @@ export type ResolversTypes = ResolversObject<{
   LoginResult: ResolverTypeWrapper<LoginResult>,
   SendMessageResult: ResolverTypeWrapper<SendMessageResult>,
   DeleteMessageResult: ResolverTypeWrapper<DeleteMessageResult>,
+  EditMessageResult: ResolverTypeWrapper<EditMessageResult>,
   Token: ResolverTypeWrapper<Token>,
 }>;
 
@@ -232,6 +247,7 @@ export type ResolversParentTypes = ResolversObject<{
   LoginResult: LoginResult,
   SendMessageResult: SendMessageResult,
   DeleteMessageResult: DeleteMessageResult,
+  EditMessageResult: EditMessageResult,
   Token: Token,
 }>;
 
@@ -244,6 +260,12 @@ export type CreateUserResultResolvers<ContextType = any, ParentType extends Reso
 export type DeleteMessageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMessageResult'] = ResolversParentTypes['DeleteMessageResult']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+}>;
+
+export type EditMessageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['EditMessageResult'] = ResolversParentTypes['EditMessageResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  editedMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>,
 }>;
 
 export type LoginResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResult'] = ResolversParentTypes['LoginResult']> = ResolversObject<{
@@ -263,6 +285,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   login?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'login' | 'password'>>,
   sendMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'messageText'>>,
   deleteMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationDeleteMessageArgs, 'messageId'>>,
+  editMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationEditMessageArgs, 'messageId' | 'updatedText'>>,
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
@@ -273,7 +296,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type ResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['Result'] = ResolversParentTypes['Result']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'CreateUserResult' | 'LoginResult' | 'SendMessageResult' | 'DeleteMessageResult', ParentType, ContextType>,
+  __resolveType: TypeResolveFn<'CreateUserResult' | 'LoginResult' | 'SendMessageResult' | 'DeleteMessageResult' | 'EditMessageResult', ParentType, ContextType>,
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 }>;
@@ -305,6 +328,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type Resolvers<ContextType = any> = ResolversObject<{
   CreateUserResult?: CreateUserResultResolvers<ContextType>,
   DeleteMessageResult?: DeleteMessageResultResolvers<ContextType>,
+  EditMessageResult?: EditMessageResultResolvers<ContextType>,
   LoginResult?: LoginResultResolvers<ContextType>,
   Message?: MessageResolvers<ContextType>,
   Mutation?: MutationResolvers<ContextType>,

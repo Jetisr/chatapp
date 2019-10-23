@@ -1,7 +1,11 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
 import { getRepository, Repository } from "typeorm";
 import Message from "../entities/message";
-import { MessageDeleteError, MessageSendError } from "../errors";
+import {
+  MessageDeleteError,
+  MessageSendError,
+  MessageEditError
+} from "../errors";
 import {
   MutationSendMessageArgs,
   QueryAllMessagesArgs
@@ -66,6 +70,24 @@ class MessageAPI extends DataSource {
         "User is not allowed to delete this message"
       );
     }
+  }
+
+  async editMessage(
+    messageId: string,
+    updatedMessageText: string
+  ): Promise<Message> {
+    const messageToEdit = await this.repository.findOneOrFail(messageId, {
+      relations: ["user"]
+    });
+    if (
+      this.context.currentUser &&
+      this.context.currentUser.id === messageToEdit.user.id
+    ) {
+      messageToEdit.messageText = updatedMessageText;
+      return this.repository.save(messageToEdit);
+    }
+
+    throw new MessageEditError("User is not allowed to edit this message");
   }
 }
 

@@ -98,6 +98,34 @@ const Mutation: MutationResolvers<Context> = {
       }
       return { success: false, message: e.message };
     }
+  },
+  editMessage: async (
+    root,
+    { messageId, updatedText },
+    { dataSources, currentUser }
+  ) => {
+    if (!currentUser) {
+      return {
+        success: false,
+        message: "Valid authorization header must be sent with request"
+      };
+    }
+    try {
+      const editedMessage = await dataSources.messageAPI.editMessage(
+        messageId,
+        updatedText
+      );
+      return { success: true, editedMessage };
+    } catch (e) {
+      if (e.name === "EntityNotFound") {
+        return {
+          success: false,
+          message: "Message does not exist"
+        };
+      }
+
+      return { success: false, message: e.message };
+    }
   }
 };
 
@@ -134,6 +162,10 @@ const Result: ResultResolvers = {
 
     if ("sentMessage" in root) {
       return "SendMessageResult";
+    }
+
+    if ("editedMessage" in root) {
+      return "EditMessageResult";
     }
 
     return "DeleteMessageResult";
