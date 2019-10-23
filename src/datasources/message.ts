@@ -3,6 +3,7 @@ import { Repository, getRepository } from "typeorm";
 import Message from "../entities/message";
 import { BaseContext } from "../typescript/interfaces";
 import { MutationSendMessageArgs, Result } from "../typescript/codegen";
+import { MessageSendError, MessageDeleteError } from "../errors";
 
 class MessageAPI extends DataSource {
   private repository: Repository<Message>;
@@ -18,23 +19,16 @@ class MessageAPI extends DataSource {
     this.context = config.context;
   }
 
-  async sendMessage({ messageText }: MutationSendMessageArgs): Promise<Result> {
+  async sendMessage({
+    messageText
+  }: MutationSendMessageArgs): Promise<Message> {
     if (!this.context.currentUser) {
-      return {
-        success: false,
-        message: "Authorization headers must be sent with request"
-      };
+      throw new MessageSendError("No logged in user");
     }
-
     const message = new Message();
     message.messageText = messageText;
     message.user = this.context.currentUser;
-    await this.repository.save(message);
-
-    return {
-      success: true,
-      data: message
-    };
+    return this.repository.save(message);
   }
 
   async allMessages(): Promise<Message[]> {
@@ -43,6 +37,23 @@ class MessageAPI extends DataSource {
 
   async findMessage(messageId: string): Promise<Message> {
     return this.repository.findOneOrFail(messageId, { relations: ["user"] });
+  }
+
+  async deleteMessage(messageId: string): Promise<void> {
+    const messageToDelete = await this.repository.findOneOrFail(messageId, {
+      relations: ["user"]
+    });
+
+    if (
+      this.context.currentUser &&
+      this.context.currentUser.id === messageToDelete.user.id
+    ) {
+      await this.repository.remove(messageToDelete);
+    } else {
+      throw new MessageDeleteError(
+        "User is not allowed to delete this message"
+      );
+    }
   }
 }
 

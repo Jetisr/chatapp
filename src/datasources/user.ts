@@ -11,6 +11,7 @@ import {
   Result
 } from "../typescript/codegen";
 import { JWT_SECRET } from "../utilities/config";
+import { LoginError } from "../errors";
 
 class UserAPI extends DataSource {
   repository: Repository<User>;
@@ -38,7 +39,7 @@ class UserAPI extends DataSource {
     password,
     firstName,
     lastName
-  }: MutationCreateUserArgs): Promise<Result> {
+  }: MutationCreateUserArgs): Promise<User> {
     const user = new User();
     const passwordHash = await bcrypt.hash(password, 10);
     user.username = userName.toLowerCase();
@@ -46,68 +47,21 @@ class UserAPI extends DataSource {
     user.passwordHash = passwordHash;
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
-    try {
-      await this.repository.save(user);
-    } catch (e) {
-      if (e.message.includes("UNIQUE constraint failed")) {
-        const regex = new RegExp(/user\.(.+)$/);
-        const regexResult = regex.exec(e.message);
-        const match = (regexResult && regexResult[1]) || "";
-        switch (match) {
-          case "username":
-            return {
-              success: false,
-              message: "Username must be unique"
-            };
-          case "email":
-            return {
-              success: false,
-              message: "Email must be unique"
-            };
-          default:
-            return {
-              success: false,
-              message: e.message
-            };
-        }
-      }
-    }
-
-    return {
-      success: true,
-      data: { ...user, messages: [] }
-    };
+    return this.repository.save(user);
   }
 
-  async login({ login, password }: MutationLoginArgs): Promise<Result> {
-    if (!login) {
-      return { success: false, message: "Must provide a login" };
-    }
-
+  async login({ login, password }: MutationLoginArgs): Promise<string> {
     const lowerLogin = UserAPI.lowercaseInput(login);
-    const user = await this.repository.findOne({
+    const user = await this.repository.findOneOrFail({
       where: [{ username: lowerLogin }, { email: lowerLogin }]
     });
 
-    if (!user) {
-      return {
-        success: false,
-        message: "Incorrect password or login"
-      };
-    }
-
     const passwordCorrect = await bcrypt.compare(password, user.passwordHash);
     if (!passwordCorrect) {
-      return {
-        success: false,
-        message: "Incorrect password or login"
-      };
+      throw new LoginError("Incorrect password");
     }
     const token = jwt.sign(user.id, JWT_SECRET);
-    return {
-      success: true,
-      data: { token }
-    };
+    return token;
   }
 
   async findUser({ email, id, username }: QueryUserArgs): Promise<User | null> {

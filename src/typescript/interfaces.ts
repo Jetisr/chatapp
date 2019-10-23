@@ -3,7 +3,7 @@ import UserAPI from "../datasources/user";
 import MessageAPI from "../datasources/message";
 
 export interface BaseContext {
-  currentUser: User | undefined;
+  currentUser: User | null;
 }
 
 export interface Context extends BaseContext {

@@ -18,15 +18,19 @@ createConnection().then(connection => {
     }),
     context: async ({ req }) => {
       const auth = req ? req.headers.authorization : null;
-      if (auth && auth.toLowerCase().startsWith("bearer ")) {
-        const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET);
-        const currentUser = await connection
-          .getRepository(User)
-          .findOne(
-            { id: decodedToken.toString() },
-            { relations: ["messages", "messages.user"] }
-          );
-        return { currentUser };
+      try {
+        if (auth && auth.toLowerCase().startsWith("bearer ")) {
+          const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET);
+          const currentUser = await connection
+            .getRepository(User)
+            .findOne(
+              { id: decodedToken.toString() },
+              { relations: ["messages", "messages.user"] }
+            );
+          return { currentUser };
+        }
+      } catch (e) {
+        return { currentUser: null };
       }
     }
   });

@@ -1,6 +1,33 @@
 import { gql } from "apollo-server";
 
 const typeDefs = gql`
+  interface Result {
+    success: Boolean!
+    message: String
+  }
+
+  type CreateUserResult implements Result {
+    success: Boolean!
+    message: String
+    user: User
+  }
+
+  type LoginResult implements Result {
+    success: Boolean!
+    message: String
+    token: String
+  }
+
+  type SendMessageResult implements Result {
+    success: Boolean!
+    message: String
+    sentMessage: Message
+  }
+
+  type DeleteMessageResult implements Result {
+    success: Boolean!
+    message: String
+  }
   type User {
     id: ID!
     username: String!
@@ -28,13 +55,13 @@ const typeDefs = gql`
     token: String
   }
 
-  union ResultData = User | Token | Message
+  # union ResultData = User | Token | Message
 
-  type Result {
-    success: Boolean!
-    message: String
-    data: ResultData
-  }
+  # type Result {
+  #   success: Boolean!
+  #   message: String
+  #   data: ResultData
+  # }
 
   type Mutation {
     createUser(
@@ -46,6 +73,7 @@ const typeDefs = gql`
     ): Result!
     login(login: String!, password: String!): Result!
     sendMessage(messageText: String!): Result!
+    deleteMessage(messageId: ID!): Result!
   }
 
   type Subscription {
