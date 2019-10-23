@@ -56,6 +56,7 @@ const Message: React.FC<Props> = ({ message, canDelete }) => {
         {canDelete && (
           <ListItemSecondaryAction>
             <IconButton
+              color="primary"
               edge="end"
               aria-label="delete"
               onClick={() => {
