@@ -16,6 +16,26 @@ export enum CacheControlScope {
   Private = 'PRIVATE'
 }
 
+export type CreateUserResult = Result & {
+   __typename?: 'CreateUserResult',
+  success: Scalars['Boolean'],
+  message?: Maybe<Scalars['String']>,
+  user?: Maybe<User>,
+};
+
+export type DeleteMessageResult = Result & {
+   __typename?: 'DeleteMessageResult',
+  success: Scalars['Boolean'],
+  message?: Maybe<Scalars['String']>,
+};
+
+export type LoginResult = Result & {
+   __typename?: 'LoginResult',
+  success: Scalars['Boolean'],
+  message?: Maybe<Scalars['String']>,
+  token?: Maybe<Scalars['String']>,
+};
+
 export type Message = {
    __typename?: 'Message',
   id: Scalars['ID'],
@@ -28,6 +48,7 @@ export type Mutation = {
   createUser: Result,
   login: Result,
   sendMessage: Result,
+  deleteMessage: Result,
 };
 
 
@@ -48,6 +69,11 @@ export type MutationLoginArgs = {
 
 export type MutationSendMessageArgs = {
   messageText: Scalars['String']
+};
+
+
+export type MutationDeleteMessageArgs = {
+  messageId: Scalars['ID']
 };
 
 export type Query = {
@@ -71,13 +97,16 @@ export type QueryMessageArgs = {
 };
 
 export type Result = {
-   __typename?: 'Result',
   success: Scalars['Boolean'],
   message?: Maybe<Scalars['String']>,
-  data?: Maybe<ResultData>,
 };
 
-export type ResultData = User | Token | Message;
+export type SendMessageResult = Result & {
+   __typename?: 'SendMessageResult',
+  success: Scalars['Boolean'],
+  message?: Maybe<Scalars['String']>,
+  sentMessage?: Maybe<Message>,
+};
 
 export type Subscription = {
    __typename?: 'Subscription',
@@ -119,12 +148,17 @@ export type LoginMutationVariables = {
 export type LoginMutation = (
   { __typename?: 'Mutation' }
   & { login: (
-    { __typename?: 'Result' }
-    & Pick<Result, 'message' | 'success'>
-    & { data: Maybe<{ __typename?: 'User' } | (
-      { __typename?: 'Token' }
-      & Pick<Token, 'token'>
-    ) | { __typename?: 'Message' }> }
+    { __typename?: 'CreateUserResult' }
+    & Pick<CreateUserResult, 'message' | 'success'>
+  ) | (
+    { __typename?: 'DeleteMessageResult' }
+    & Pick<DeleteMessageResult, 'message' | 'success'>
+  ) | (
+    { __typename?: 'LoginResult' }
+    & Pick<LoginResult, 'token' | 'message' | 'success'>
+  ) | (
+    { __typename?: 'SendMessageResult' }
+    & Pick<SendMessageResult, 'message' | 'success'>
   ) }
 );
 
@@ -140,9 +174,9 @@ export type CreateAccountMutationVariables = {
 export type CreateAccountMutation = (
   { __typename?: 'Mutation' }
   & { createUser: (
-    { __typename?: 'Result' }
-    & Pick<Result, 'success' | 'message'>
-    & { data: Maybe<(
+    { __typename?: 'CreateUserResult' }
+    & Pick<CreateUserResult, 'success' | 'message'>
+    & { user: Maybe<(
       { __typename?: 'User' }
       & Pick<User, 'email' | 'firstName' | 'id' | 'lastName' | 'username'>
       & { messages: Array<(
@@ -153,7 +187,60 @@ export type CreateAccountMutation = (
           & Pick<User, 'id'>
         ) }
       )> }
-    ) | { __typename?: 'Token' } | { __typename?: 'Message' }> }
+    )> }
+  ) | (
+    { __typename?: 'DeleteMessageResult' }
+    & Pick<DeleteMessageResult, 'success' | 'message'>
+  ) | (
+    { __typename?: 'LoginResult' }
+    & Pick<LoginResult, 'success' | 'message'>
+  ) | (
+    { __typename?: 'SendMessageResult' }
+    & Pick<SendMessageResult, 'success' | 'message'>
+  ) }
+);
+
+export type SendMessageMutationVariables = {
+  messageText: Scalars['String']
+};
+
+
+export type SendMessageMutation = (
+  { __typename?: 'Mutation' }
+  & { sendMessage: (
+    { __typename?: 'CreateUserResult' }
+    & Pick<CreateUserResult, 'success' | 'message'>
+  ) | (
+    { __typename?: 'DeleteMessageResult' }
+    & Pick<DeleteMessageResult, 'success' | 'message'>
+  ) | (
+    { __typename?: 'LoginResult' }
+    & Pick<LoginResult, 'success' | 'message'>
+  ) | (
+    { __typename?: 'SendMessageResult' }
+    & Pick<SendMessageResult, 'success' | 'message'>
+  ) }
+);
+
+export type DeleteMessageMutationVariables = {
+  messageId: Scalars['ID']
+};
+
+
+export type DeleteMessageMutation = (
+  { __typename?: 'Mutation' }
+  & { deleteMessage: (
+    { __typename?: 'CreateUserResult' }
+    & Pick<CreateUserResult, 'success' | 'message'>
+  ) | (
+    { __typename?: 'DeleteMessageResult' }
+    & Pick<DeleteMessageResult, 'success' | 'message'>
+  ) | (
+    { __typename?: 'LoginResult' }
+    & Pick<LoginResult, 'success' | 'message'>
+  ) | (
+    { __typename?: 'SendMessageResult' }
+    & Pick<SendMessageResult, 'success' | 'message'>
   ) }
 );
 
