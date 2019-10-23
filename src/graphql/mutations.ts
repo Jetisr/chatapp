@@ -5,10 +5,8 @@ export const LOGIN = gql`
     login(login: $login, password: $password) {
       message
       success
-      data {
-        ... on Token {
-          token
-        }
+      ... on LoginResult {
+        token
       }
     }
   }
@@ -31,8 +29,8 @@ export const CREATE_ACCOUNT = gql`
     ) {
       success
       message
-      data {
-        ... on User {
+      ... on CreateUserResult {
+        user {
           email
           firstName
           id
@@ -46,6 +44,24 @@ export const CREATE_ACCOUNT = gql`
           username
         }
       }
+    }
+  }
+`;
+
+export const SEND_MESSAGE = gql`
+  mutation sendMessage($messageText: String!) {
+    sendMessage(messageText: $messageText) {
+      success
+      message
+    }
+  }
+`;
+
+export const DELETE_MESSAGE = gql`
+  mutation deleteMessage($messageId: ID!) {
+    deleteMessage(messageId: $messageId) {
+      success
+      message
     }
   }
 `;
