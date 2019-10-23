@@ -124,18 +124,18 @@ const CreateAccountForm: React.FC = () => {
 
     if (
       createAccountResult.data &&
-      createAccountResult.data.createUser.data &&
-      createAccountResult.data.createUser.data.__typename === "User" &&
+      createAccountResult.data.createUser.success &&
+      createAccountResult.data.createUser.__typename === "CreateUserResult" &&
       loginResult.data &&
-      loginResult.data.login.data &&
-      loginResult.data.login.data.__typename === "Token" &&
-      loginResult.data.login.data.token
+      loginResult.data.login.success &&
+      loginResult.data.login.__typename === "LoginResult" &&
+      loginResult.data.login.token
     ) {
       client.writeQuery({
         query: ME,
-        data: { me: createAccountResult.data.createUser.data }
+        data: { me: createAccountResult.data.createUser.user }
       });
-      const { token } = loginResult.data.login.data;
+      const { token } = loginResult.data.login;
       authorize(token);
       history.push("/");
     }
@@ -264,11 +264,11 @@ const LoginForm: React.FC = () => {
 
     if (
       result.data &&
-      result.data.login.data &&
-      result.data.login.data.__typename === "Token" &&
-      result.data.login.data.token
+      result.data.login.success &&
+      result.data.login.__typename === "LoginResult" &&
+      result.data.login.token
     ) {
-      const { token } = result.data.login.data;
+      const { token } = result.data.login;
       authorize(token);
       history.push("/");
     } else {
