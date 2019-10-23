@@ -20,7 +20,7 @@ export type CreateUserResult = Result & {
 export type DeleteMessageResult = Result & {
    __typename?: 'DeleteMessageResult',
   success: Scalars['Boolean'],
-  messsage?: Maybe<Scalars['String']>,
+  message?: Maybe<Scalars['String']>,
 };
 
 export type LoginResult = Result & {
@@ -83,6 +83,12 @@ export type QueryUserArgs = {
   username?: Maybe<Scalars['String']>,
   email?: Maybe<Scalars['String']>,
   id?: Maybe<Scalars['String']>
+};
+
+
+export type QueryAllMessagesArgs = {
+  email?: Maybe<Scalars['String']>,
+  username?: Maybe<Scalars['String']>
 };
 
 
@@ -237,7 +243,7 @@ export type CreateUserResultResolvers<ContextType = any, ParentType extends Reso
 
 export type DeleteMessageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMessageResult'] = ResolversParentTypes['DeleteMessageResult']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
-  messsage?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 }>;
 
 export type LoginResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResult'] = ResolversParentTypes['LoginResult']> = ResolversObject<{
@@ -262,7 +268,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, QueryUserArgs>,
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
-  allMessages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>,
+  allMessages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, QueryAllMessagesArgs>,
   message?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessageArgs, 'messageId'>>,
 }>;
 

@@ -104,8 +104,8 @@ const Mutation: MutationResolvers<Context> = {
 const Query: QueryResolvers<Context> = {
   user: (root, args, { dataSources }) => dataSources.userAPI.findUser(args),
   me: (root, args, { currentUser }) => currentUser || null,
-  allMessages: (root, args, { dataSources }) =>
-    dataSources.messageAPI.allMessages(),
+  allMessages: async (root, args, { dataSources }) =>
+    dataSources.messageAPI.allMessages(args),
   message: async (root, args, { dataSources }) => {
     try {
       const resp = await dataSources.messageAPI.findMessage(args.messageId);

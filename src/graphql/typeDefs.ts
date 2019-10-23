@@ -47,21 +47,22 @@ const typeDefs = gql`
   type Query {
     user(username: String, email: String, id: String): User
     me: User
-    allMessages: [Message!]!
+    allMessages(
+      """
+      Filter by email
+      """
+      email: String
+      """
+      Filter by username
+      """
+      username: String
+    ): [Message!]!
     message(messageId: ID!): Message
   }
 
   type Token {
     token: String
   }
-
-  # union ResultData = User | Token | Message
-
-  # type Result {
-  #   success: Boolean!
-  #   message: String
-  #   data: ResultData
-  # }
 
   type Mutation {
     createUser(

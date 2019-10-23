@@ -1,9 +1,12 @@
 import { DataSource, DataSourceConfig } from "apollo-datasource";
-import { Repository, getRepository } from "typeorm";
+import { getRepository, Repository } from "typeorm";
 import Message from "../entities/message";
+import { MessageDeleteError, MessageSendError } from "../errors";
+import {
+  MutationSendMessageArgs,
+  QueryAllMessagesArgs
+} from "../typescript/codegen";
 import { BaseContext } from "../typescript/interfaces";
-import { MutationSendMessageArgs, Result } from "../typescript/codegen";
-import { MessageSendError, MessageDeleteError } from "../errors";
 
 class MessageAPI extends DataSource {
   private repository: Repository<Message>;
@@ -31,7 +34,16 @@ class MessageAPI extends DataSource {
     return this.repository.save(message);
   }
 
-  async allMessages(): Promise<Message[]> {
+  async allMessages(args: QueryAllMessagesArgs): Promise<Message[]> {
+    if (args.username || args.email) {
+      return this.repository
+        .createQueryBuilder("message")
+        .leftJoinAndSelect("message.user", "user")
+        .where("user.username = :username", { username: args.username })
+        .orWhere("user.email = :email", { email: args.email })
+        .getMany();
+    }
+
     return this.repository.find({ relations: ["user"] });
   }
 
