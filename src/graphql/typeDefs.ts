@@ -34,6 +34,13 @@ const typeDefs = gql`
     message: String
     editedMessage: Message
   }
+
+  type AddAvatarResult implements Result {
+    success: Boolean!
+    message: String
+    imageLocation: String
+  }
+
   type User {
     id: ID!
     username: String!
@@ -82,6 +89,7 @@ const typeDefs = gql`
     sendMessage(messageText: String!): Result!
     deleteMessage(messageId: ID!): Result!
     editMessage(messageId: ID!, updatedText: String!): Result!
+    addAvatar(avatar: Upload!): Result!
   }
 
   type Subscription {

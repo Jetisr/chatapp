@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
 export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
@@ -8,6 +8,14 @@ export type Scalars = {
   Boolean: boolean,
   Int: number,
   Float: number,
+  Upload: Promise<{ filename: string; mimetype: string; encoding: string; createReadStream: () => NodeJS.ReadableStream }>,
+};
+
+export type AddAvatarResult = Result & {
+   __typename?: 'AddAvatarResult',
+  success: Scalars['Boolean'],
+  message?: Maybe<Scalars['String']>,
+  cloudinaryUrl?: Maybe<Scalars['String']>,
 };
 
 export type CreateUserResult = Result & {
@@ -51,6 +59,7 @@ export type Mutation = {
   sendMessage: Result,
   deleteMessage: Result,
   editMessage: Result,
+  addAvatar: Result,
 };
 
 
@@ -82,6 +91,11 @@ export type MutationDeleteMessageArgs = {
 export type MutationEditMessageArgs = {
   messageId: Scalars['ID'],
   updatedText: Scalars['String']
+};
+
+
+export type MutationAddAvatarArgs = {
+  avatar: Scalars['Upload']
 };
 
 export type Query = {
@@ -131,6 +145,7 @@ export type Token = {
    __typename?: 'Token',
   token?: Maybe<Scalars['String']>,
 };
+
 
 export type User = {
    __typename?: 'User',
@@ -223,12 +238,14 @@ export type ResolversTypes = ResolversObject<{
   Mutation: ResolverTypeWrapper<{}>,
   Result: ResolverTypeWrapper<Result>,
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>,
+  Upload: ResolverTypeWrapper<Scalars['Upload']>,
   Subscription: ResolverTypeWrapper<{}>,
   CreateUserResult: ResolverTypeWrapper<CreateUserResult>,
   LoginResult: ResolverTypeWrapper<LoginResult>,
   SendMessageResult: ResolverTypeWrapper<SendMessageResult>,
   DeleteMessageResult: ResolverTypeWrapper<DeleteMessageResult>,
   EditMessageResult: ResolverTypeWrapper<EditMessageResult>,
+  AddAvatarResult: ResolverTypeWrapper<AddAvatarResult>,
   Token: ResolverTypeWrapper<Token>,
 }>;
 
@@ -242,13 +259,21 @@ export type ResolversParentTypes = ResolversObject<{
   Mutation: {},
   Result: Result,
   Boolean: Scalars['Boolean'],
+  Upload: Scalars['Upload'],
   Subscription: {},
   CreateUserResult: CreateUserResult,
   LoginResult: LoginResult,
   SendMessageResult: SendMessageResult,
   DeleteMessageResult: DeleteMessageResult,
   EditMessageResult: EditMessageResult,
+  AddAvatarResult: AddAvatarResult,
   Token: Token,
+}>;
+
+export type AddAvatarResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AddAvatarResult'] = ResolversParentTypes['AddAvatarResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  cloudinaryUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 }>;
 
 export type CreateUserResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateUserResult'] = ResolversParentTypes['CreateUserResult']> = ResolversObject<{
@@ -286,6 +311,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   sendMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'messageText'>>,
   deleteMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationDeleteMessageArgs, 'messageId'>>,
   editMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationEditMessageArgs, 'messageId' | 'updatedText'>>,
+  addAvatar?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationAddAvatarArgs, 'avatar'>>,
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
@@ -296,7 +322,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type ResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['Result'] = ResolversParentTypes['Result']> = ResolversObject<{
-  __resolveType: TypeResolveFn<'CreateUserResult' | 'LoginResult' | 'SendMessageResult' | 'DeleteMessageResult' | 'EditMessageResult', ParentType, ContextType>,
+  __resolveType: TypeResolveFn<'CreateUserResult' | 'LoginResult' | 'SendMessageResult' | 'DeleteMessageResult' | 'EditMessageResult' | 'AddAvatarResult', ParentType, ContextType>,
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 }>;
@@ -315,6 +341,10 @@ export type TokenResolvers<ContextType = any, ParentType extends ResolversParent
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 }>;
 
+export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
+  name: 'Upload'
+}
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   username?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
@@ -326,6 +356,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  AddAvatarResult?: AddAvatarResultResolvers<ContextType>,
   CreateUserResult?: CreateUserResultResolvers<ContextType>,
   DeleteMessageResult?: DeleteMessageResultResolvers<ContextType>,
   EditMessageResult?: EditMessageResultResolvers<ContextType>,
@@ -337,6 +368,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   SendMessageResult?: SendMessageResultResolvers<ContextType>,
   Subscription?: SubscriptionResolvers<ContextType>,
   Token?: TokenResolvers<ContextType>,
+  Upload?: GraphQLScalarType,
   User?: UserResolvers<ContextType>,
 }>;
 
