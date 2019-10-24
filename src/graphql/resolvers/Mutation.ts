@@ -1,14 +1,9 @@
-import { PubSub } from "apollo-server";
-import {
-  MutationResolvers,
-  QueryResolvers,
-  Resolvers,
-  SubscriptionResolvers,
-  ResultResolvers
-} from "../typescript/codegen";
-import { Context } from "../typescript/interfaces";
-
-const pubsub = new PubSub();
+import { createWriteStream, unlink } from "fs";
+import mkdirp from "mkdirp";
+import sharp from "sharp";
+import { MutationResolvers } from "../../typescript/codegen";
+import { Context } from "../../typescript/interfaces";
+import { pubsub } from "./base";
 
 const Mutation: MutationResolvers<Context> = {
   createUser: async (root, args, { dataSources }) => {
@@ -19,7 +14,11 @@ const Mutation: MutationResolvers<Context> = {
         user
       };
     } catch (e) {
-      let { message }: { message: string } = e;
+      let {
+        message
+      }: {
+        message: string;
+      } = e;
       if (e.message.includes("UNIQUE constraint failed")) {
         const regex = new RegExp(/user\.(.+)$/);
         const regexResult = regex.exec(e.message);
@@ -36,7 +35,6 @@ const Mutation: MutationResolvers<Context> = {
             break;
         }
       }
-
       return {
         success: false,
         message
@@ -70,7 +68,6 @@ const Mutation: MutationResolvers<Context> = {
         message: "Valid authorization header must be sent with request"
       };
     }
-
     try {
       const message = await dataSources.messageAPI.sendMessage(args);
       pubsub.publish("MESSAGE_ADDED", { messageAdded: message });
@@ -123,60 +120,38 @@ const Mutation: MutationResolvers<Context> = {
           message: "Message does not exist"
         };
       }
-
       return { success: false, message: e.message };
     }
+  },
+  addAvatar: async (root, { avatar }, { dataSources, currentUser }) => {
+    if (!currentUser) {
+      return {
+        success: false,
+        message: "Valid authorization header must be sent with request"
+      };
+    }
+    const UPLOAD_DIR = `./src/assets/avatars`;
+    mkdirp.sync(UPLOAD_DIR);
+    const convertToWebp = sharp().webp();
+    const { createReadStream } = await avatar;
+    const fileStream = createReadStream();
+    const path = `${UPLOAD_DIR}/${currentUser.id}.webp`;
+    await new Promise((resolve, reject) => {
+      fileStream
+        .on("error", error => {
+          unlink(path, () => {
+            reject(error);
+          });
+        })
+        .pipe(convertToWebp)
+        .pipe(createWriteStream(path))
+        .on("error", reject)
+        .on("finish", resolve);
+    });
+    return {
+      success: true
+    };
   }
 };
 
-const Query: QueryResolvers<Context> = {
-  user: (root, args, { dataSources }) => dataSources.userAPI.findUser(args),
-  me: (root, args, { currentUser }) => currentUser || null,
-  allMessages: async (root, args, { dataSources }) =>
-    dataSources.messageAPI.allMessages(args),
-  message: async (root, args, { dataSources }) => {
-    try {
-      const resp = await dataSources.messageAPI.findMessage(args.messageId);
-      return resp;
-    } catch (e) {
-      return null;
-    }
-  }
-};
-
-const Subscription: SubscriptionResolvers = {
-  messageAdded: {
-    subscribe: () => pubsub.asyncIterator(["MESSAGE_ADDED"])
-  }
-};
-
-const Result: ResultResolvers = {
-  __resolveType: (root, args) => {
-    if ("user" in root) {
-      return "CreateUserResult";
-    }
-
-    if ("token" in root) {
-      return "LoginResult";
-    }
-
-    if ("sentMessage" in root) {
-      return "SendMessageResult";
-    }
-
-    if ("editedMessage" in root) {
-      return "EditMessageResult";
-    }
-
-    return "DeleteMessageResult";
-  }
-};
-
-const resolvers: Resolvers<Context> = {
-  Mutation,
-  Query,
-  Subscription,
-  Result
-};
-
-export default resolvers;
+export default Mutation;
