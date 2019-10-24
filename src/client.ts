@@ -4,14 +4,13 @@ import { ApolloClient } from "apollo-client";
 import { ApolloLink, split } from "apollo-link";
 import { setContext } from "apollo-link-context";
 import { onError } from "apollo-link-error";
-import { createHttpLink } from "apollo-link-http";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
+import { createUploadLink } from "apollo-upload-client";
 
 const cache = new InMemoryCache();
-const httpLink = createHttpLink({
-  uri: "http://192.168.1.231:4000/"
-});
+
+const uploadLink = createUploadLink({ uri: "http://192.168.1.231:4000" });
 const wsLink = new WebSocketLink({
   uri: "ws://192.168.1.231:4000/graphql",
   options: {
@@ -56,7 +55,7 @@ const link = ApolloLink.from([
         );
       },
       wsLink,
-      httpLink
+      uploadLink
     )
   )
 ]);

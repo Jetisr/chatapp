@@ -11,6 +11,13 @@ export type Scalars = {
 };
 
 
+export type AddAvatarResult = Result & {
+   __typename?: 'AddAvatarResult',
+  success: Scalars['Boolean'],
+  message?: Maybe<Scalars['String']>,
+  imageLocation?: Maybe<Scalars['String']>,
+};
+
 export enum CacheControlScope {
   Public = 'PUBLIC',
   Private = 'PRIVATE'
@@ -57,6 +64,7 @@ export type Mutation = {
   sendMessage: Result,
   deleteMessage: Result,
   editMessage: Result,
+  addAvatar: Result,
 };
 
 
@@ -88,6 +96,11 @@ export type MutationDeleteMessageArgs = {
 export type MutationEditMessageArgs = {
   messageId: Scalars['ID'],
   updatedText: Scalars['String']
+};
+
+
+export type MutationAddAvatarArgs = {
+  avatar: Scalars['Upload']
 };
 
 export type Query = {
@@ -168,6 +181,9 @@ export type LoginMutationVariables = {
 export type LoginMutation = (
   { __typename?: 'Mutation' }
   & { login: (
+    { __typename?: 'AddAvatarResult' }
+    & Pick<AddAvatarResult, 'message' | 'success'>
+  ) | (
     { __typename?: 'CreateUserResult' }
     & Pick<CreateUserResult, 'message' | 'success'>
   ) | (
@@ -197,6 +213,9 @@ export type CreateAccountMutationVariables = {
 export type CreateAccountMutation = (
   { __typename?: 'Mutation' }
   & { createUser: (
+    { __typename?: 'AddAvatarResult' }
+    & Pick<AddAvatarResult, 'success' | 'message'>
+  ) | (
     { __typename?: 'CreateUserResult' }
     & Pick<CreateUserResult, 'success' | 'message'>
     & { user: Maybe<(
@@ -234,6 +253,9 @@ export type SendMessageMutationVariables = {
 export type SendMessageMutation = (
   { __typename?: 'Mutation' }
   & { sendMessage: (
+    { __typename?: 'AddAvatarResult' }
+    & Pick<AddAvatarResult, 'success' | 'message'>
+  ) | (
     { __typename?: 'CreateUserResult' }
     & Pick<CreateUserResult, 'success' | 'message'>
   ) | (
@@ -259,6 +281,9 @@ export type DeleteMessageMutationVariables = {
 export type DeleteMessageMutation = (
   { __typename?: 'Mutation' }
   & { deleteMessage: (
+    { __typename?: 'AddAvatarResult' }
+    & Pick<AddAvatarResult, 'success' | 'message'>
+  ) | (
     { __typename?: 'CreateUserResult' }
     & Pick<CreateUserResult, 'success' | 'message'>
   ) | (
@@ -285,6 +310,9 @@ export type EditMessageMutationVariables = {
 export type EditMessageMutation = (
   { __typename?: 'Mutation' }
   & { editMessage: (
+    { __typename?: 'AddAvatarResult' }
+    & Pick<AddAvatarResult, 'message' | 'success'>
+  ) | (
     { __typename?: 'CreateUserResult' }
     & Pick<CreateUserResult, 'message' | 'success'>
   ) | (
@@ -303,6 +331,34 @@ export type EditMessageMutation = (
   ) | (
     { __typename?: 'SendMessageResult' }
     & Pick<SendMessageResult, 'message' | 'success'>
+  ) }
+);
+
+export type AddAvatarMutationVariables = {
+  avatar: Scalars['Upload']
+};
+
+
+export type AddAvatarMutation = (
+  { __typename?: 'Mutation' }
+  & { addAvatar: (
+    { __typename?: 'AddAvatarResult' }
+    & Pick<AddAvatarResult, 'success'>
+  ) | (
+    { __typename?: 'CreateUserResult' }
+    & Pick<CreateUserResult, 'success'>
+  ) | (
+    { __typename?: 'DeleteMessageResult' }
+    & Pick<DeleteMessageResult, 'success'>
+  ) | (
+    { __typename?: 'EditMessageResult' }
+    & Pick<EditMessageResult, 'success'>
+  ) | (
+    { __typename?: 'LoginResult' }
+    & Pick<LoginResult, 'success'>
+  ) | (
+    { __typename?: 'SendMessageResult' }
+    & Pick<SendMessageResult, 'success'>
   ) }
 );
 

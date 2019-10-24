@@ -80,3 +80,11 @@ export const EDIT_MESSAGE = gql`
     }
   }
 `;
+
+export const ADD_AVATAR = gql`
+  mutation addAvatar($avatar: Upload!) {
+    addAvatar(avatar: $avatar) {
+      success
+    }
+  }
+`;
