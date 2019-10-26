@@ -85,6 +85,7 @@ const Mutation: MutationResolvers<Context> = {
   deleteMessage: async (root, { messageId }, { dataSources }) => {
     try {
       await dataSources.messageAPI.deleteMessage(messageId);
+      pubsub.publish("MESSAGE_DELETED", { messageDeleted: messageId });
       return { success: true };
     } catch (e) {
       if (e.name === "EntityNotFound") {
@@ -112,6 +113,7 @@ const Mutation: MutationResolvers<Context> = {
         messageId,
         updatedText
       );
+      pubsub.publish("MESSAGE_EDITED", { messageEdited: editedMessage });
       return { success: true, editedMessage };
     } catch (e) {
       if (e.name === "EntityNotFound") {

@@ -94,6 +94,8 @@ const typeDefs = gql`
 
   type Subscription {
     messageAdded: Message!
+    messageDeleted: ID!
+    messageEdited: Message!
   }
 `;
 

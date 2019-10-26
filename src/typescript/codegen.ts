@@ -15,7 +15,7 @@ export type AddAvatarResult = Result & {
    __typename?: 'AddAvatarResult',
   success: Scalars['Boolean'],
   message?: Maybe<Scalars['String']>,
-  cloudinaryUrl?: Maybe<Scalars['String']>,
+  imageLocation?: Maybe<Scalars['String']>,
 };
 
 export type CreateUserResult = Result & {
@@ -139,6 +139,8 @@ export type SendMessageResult = Result & {
 export type Subscription = {
    __typename?: 'Subscription',
   messageAdded: Message,
+  messageDeleted: Scalars['ID'],
+  messageEdited: Message,
 };
 
 export type Token = {
@@ -273,7 +275,7 @@ export type ResolversParentTypes = ResolversObject<{
 export type AddAvatarResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AddAvatarResult'] = ResolversParentTypes['AddAvatarResult']> = ResolversObject<{
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
-  cloudinaryUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  imageLocation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
 }>;
 
 export type CreateUserResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateUserResult'] = ResolversParentTypes['CreateUserResult']> = ResolversObject<{
@@ -335,6 +337,8 @@ export type SendMessageResultResolvers<ContextType = any, ParentType extends Res
 
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
   messageAdded?: SubscriptionResolver<ResolversTypes['Message'], "messageAdded", ParentType, ContextType>,
+  messageDeleted?: SubscriptionResolver<ResolversTypes['ID'], "messageDeleted", ParentType, ContextType>,
+  messageEdited?: SubscriptionResolver<ResolversTypes['Message'], "messageEdited", ParentType, ContextType>,
 }>;
 
 export type TokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = ResolversObject<{
