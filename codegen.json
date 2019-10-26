@@ -3,7 +3,8 @@
   "documents": "./src/graphql/*.ts",
   "generates": {
     "src/typescript/codegen.ts": {
-      "plugins": ["typescript", "typescript-operations"]
+      "plugins": ["typescript", "typescript-operations"],
+      "schema": "src/client.ts"
     }
   }
 }

@@ -7,6 +7,15 @@ import { onError } from "apollo-link-error";
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 import { createUploadLink } from "apollo-upload-client";
+import gql from "graphql-tag";
+
+const typeDefs = gql`
+  extend type Query {
+    isLoggedIn: Boolean!
+  }
+`;
+
+const resolvers = {};
 
 const cache = new InMemoryCache();
 
@@ -60,6 +69,12 @@ const link = ApolloLink.from([
   )
 ]);
 
-const client = new ApolloClient({ cache, link });
+const client = new ApolloClient({ cache, link, typeDefs, resolvers });
+
+cache.writeData({
+  data: {
+    isLoggedIn: !!localStorage.getItem("token")
+  }
+});
 
 export default client;

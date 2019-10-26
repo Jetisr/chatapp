@@ -109,6 +109,7 @@ export type Query = {
   me?: Maybe<User>,
   allMessages: Array<Message>,
   message?: Maybe<Message>,
+  isLoggedIn: Scalars['Boolean'],
 };
 
 
@@ -407,6 +408,14 @@ export type MessageQuery = (
       & Pick<User, 'firstName' | 'lastName' | 'username' | 'email' | 'id'>
     ) }
   )> }
+);
+
+export type IsLoggedInQueryVariables = {};
+
+
+export type IsLoggedInQuery = (
+  { __typename?: 'Query' }
+  & Pick<Query, 'isLoggedIn'>
 );
 
 export type NewMessagesSubscriptionVariables = {};

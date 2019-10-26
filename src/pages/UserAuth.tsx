@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { useApolloClient, useMutation } from "@apollo/react-hooks";
+import { useApolloClient, useMutation, useQuery } from "@apollo/react-hooks";
 import {
   Box,
   Button,
@@ -12,19 +12,21 @@ import {
   Snackbar,
   TextField,
   Theme,
-  Typography
+  Typography,
+  LinearProgress
 } from "@material-ui/core";
 import { VisibilityOffOutlined, VisibilityOutlined } from "@material-ui/icons";
 import React, { useState } from "react";
 import { Link, Redirect, Route, Switch, useHistory } from "react-router-dom";
 import { CREATE_ACCOUNT, LOGIN } from "../graphql/mutations";
-import { ME } from "../graphql/queries";
-import { useAuth, useSnackbar } from "../hooks";
+import { ME, IS_LOGGED_IN } from "../graphql/queries";
+import { useSnackbar } from "../hooks";
 import {
   CreateAccountMutation,
   CreateAccountMutationVariables,
   LoginMutation,
-  LoginMutationVariables
+  LoginMutationVariables,
+  IsLoggedInQuery
 } from "../typescript/codegen";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -71,7 +73,6 @@ const Welcome: React.FC = () => {
 };
 
 const CreateAccountForm: React.FC = () => {
-  const { authorize } = useAuth();
   const client = useApolloClient();
   const history = useHistory();
   const [createAccountFunc, { loading: creatingAccount }] = useMutation<
@@ -136,7 +137,8 @@ const CreateAccountForm: React.FC = () => {
         data: { me: createAccountResult.data.createUser.user }
       });
       const { token } = loginResult.data.login;
-      authorize(token);
+      localStorage.setItem("token", token);
+      client.writeData({ data: { isLoggedIn: true } });
       history.push("/");
     }
   };
@@ -246,7 +248,7 @@ const CreateAccountForm: React.FC = () => {
 };
 
 const LoginForm: React.FC = () => {
-  const { authorize } = useAuth();
+  const client = useApolloClient();
   const history = useHistory();
   const [loginFunc, { loading }] = useMutation<
     LoginMutation,
@@ -269,7 +271,8 @@ const LoginForm: React.FC = () => {
       result.data.login.token
     ) {
       const { token } = result.data.login;
-      authorize(token);
+      localStorage.setItem("token", token);
+      client.writeData({ data: { isLoggedIn: true } });
       history.push("/");
     } else {
       openSnackbar(
@@ -351,10 +354,12 @@ const LoginForm: React.FC = () => {
 };
 
 const UserAuth: React.FC = () => {
-  const { authorized } = useAuth();
+  const { data, loading } = useQuery<IsLoggedInQuery>(IS_LOGGED_IN);
   const classes = useStyles();
 
-  if (authorized) {
+  if (loading) return <LinearProgress />;
+
+  if (data && data.isLoggedIn) {
     return <Redirect to="/" />;
   }
 

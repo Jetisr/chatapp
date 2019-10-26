@@ -53,11 +53,7 @@ const Message: React.FC<Props> = ({ message, canDelete }) => {
     <>
       <ListItem>
         <ListItemAvatar>
-          <Avatar>
-            <Typography variant="h5">
-              {message.user.username[0].toUpperCase()}
-            </Typography>
-          </Avatar>
+          <Avatar>{message.user.username[0].toUpperCase()}</Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={message.user.username}

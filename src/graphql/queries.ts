@@ -44,3 +44,9 @@ export const MESSAGE = gql`
     }
   }
 `;
+
+export const IS_LOGGED_IN = gql`
+  query isLoggedIn {
+    isLoggedIn @client
+  }
+`;
