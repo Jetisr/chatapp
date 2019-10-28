@@ -94,3 +94,9 @@ export const ADD_AVATAR = gql`
     }
   }
 `;
+
+export const LOGOUT = gql`
+  mutation logout {
+    logout @client
+  }
+`;

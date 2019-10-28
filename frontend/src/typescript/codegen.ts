@@ -395,6 +395,14 @@ export type AddAvatarMutation = (
   ) }
 );
 
+export type LogoutMutationVariables = {};
+
+
+export type LogoutMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'logout'>
+);
+
 export type MeQueryVariables = {};
 
 
