@@ -1,0 +1,16 @@
+{
+  "overwrite": true,
+  "schema": ["./src/graphql/typeDefs.ts", "scalar Upload"],
+  "documents": null,
+  "config": {
+    "useIndexSignature": true,
+    "scalars": {
+      "Upload": "Promise<{ filename: string; mimetype: string; encoding: string; createReadStream: () => NodeJS.ReadableStream }>"
+    }
+  },
+  "generates": {
+    "src/typescript/codegen.ts": {
+      "plugins": ["typescript", "typescript-resolvers"]
+    }
+  }
+}
