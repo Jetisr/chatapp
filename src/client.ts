@@ -8,16 +8,62 @@ import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 import { createUploadLink } from "apollo-upload-client";
 import gql from "graphql-tag";
+import { Resolvers, AllMessagesQuery } from "./typescript/codegen";
+import { ALL_MESSAGES } from "./graphql/queries";
 
 const typeDefs = gql`
   extend type Query {
     isLoggedIn: Boolean!
   }
+
+  extend type Mutation {
+    saveLogin(token: String!): String!
+    logout: String!
+    deleteMessageFromCache(id: ID!): String!
+  }
 `;
 
-const resolvers = {};
+const resolvers: Resolvers<{ cache: InMemoryCache }> = {
+  Mutation: {
+    saveLogin: (root, { token }, { cache }) => {
+      localStorage.setItem("token", token);
+      cache.writeData({ data: { isLoggedIn: true } });
+      return "Logged in";
+    },
+    logout: (root, args, { cache }) => {
+      localStorage.removeItem("token");
+      cache.reset();
+      return "Logged out";
+    },
+    deleteMessageFromCache: (root, args, { cache }) => {
+      const messages = cache.readQuery<AllMessagesQuery>({
+        query: ALL_MESSAGES
+      });
+      if (messages && messages.allMessages) {
+        const messagesWithoutDeletedMessage = messages.allMessages.filter(
+          m => m.id !== args.id
+        );
+        cache.writeQuery<AllMessagesQuery>({
+          query: ALL_MESSAGES,
+          data: { allMessages: messagesWithoutDeletedMessage }
+        });
 
-const cache = new InMemoryCache();
+        return `Deleted message ${args.id}`;
+      }
+
+      return "Error deleting message. Cache read query returned null";
+    }
+  }
+};
+
+const cache = new InMemoryCache({
+  cacheRedirects: {
+    Query: {
+      message: (root, args, { getCacheKey }) =>
+        getCacheKey({ __typename: "Message", id: args.messageId })
+    }
+  }
+});
 
 const uploadLink = createUploadLink({ uri: "http://192.168.1.231:4000" });
 const wsLink = new WebSocketLink({
