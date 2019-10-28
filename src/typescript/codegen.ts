@@ -143,6 +143,11 @@ export type Subscription = {
   messageEdited: Message,
 };
 
+
+export type SubscriptionMessageEditedArgs = {
+  messageId?: Maybe<Scalars['ID']>
+};
+
 export type Token = {
    __typename?: 'Token',
   token?: Maybe<Scalars['String']>,
@@ -338,7 +343,7 @@ export type SendMessageResultResolvers<ContextType = any, ParentType extends Res
 export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
   messageAdded?: SubscriptionResolver<ResolversTypes['Message'], "messageAdded", ParentType, ContextType>,
   messageDeleted?: SubscriptionResolver<ResolversTypes['ID'], "messageDeleted", ParentType, ContextType>,
-  messageEdited?: SubscriptionResolver<ResolversTypes['Message'], "messageEdited", ParentType, ContextType>,
+  messageEdited?: SubscriptionResolver<ResolversTypes['Message'], "messageEdited", ParentType, ContextType, SubscriptionMessageEditedArgs>,
 }>;
 
 export type TokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = ResolversObject<{

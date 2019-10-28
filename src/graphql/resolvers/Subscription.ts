@@ -1,5 +1,10 @@
-import { SubscriptionResolvers } from "../../typescript/codegen";
+import { withFilter } from "apollo-server";
+import {
+  SubscriptionResolvers,
+  SubscriptionMessageEditedArgs
+} from "../../typescript/codegen";
 import { pubsub } from "./base";
+import Message from "../../entities/message";
 
 const Subscription: SubscriptionResolvers = {
   messageAdded: {
@@ -9,7 +14,18 @@ const Subscription: SubscriptionResolvers = {
     subscribe: () => pubsub.asyncIterator(["MESSAGE_DELETED"])
   },
   messageEdited: {
-    subscribe: () => pubsub.asyncIterator(["MESSAGE_EDITED"])
+    subscribe: withFilter(
+      () => pubsub.asyncIterator(["MESSAGE_EDITED"]),
+      (
+        payload: { messageEdited: Message },
+        variables: SubscriptionMessageEditedArgs
+      ) => {
+        if (variables.messageId) {
+          return payload.messageEdited.id === variables.messageId;
+        }
+        return true;
+      }
+    )
   }
 };
 
