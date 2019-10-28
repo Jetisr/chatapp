@@ -7,6 +7,9 @@ export const MessageListMessageFragment = gql`
     user {
       id
       username
+      email
+      firstName
+      lastName
     }
   }
 `;
