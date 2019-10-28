@@ -32,7 +32,6 @@ const resolvers: Resolvers<{ cache: InMemoryCache }> = {
     },
     logout: (root, args, { cache }) => {
       localStorage.removeItem("token");
-      cache.reset();
       return "Logged out";
     },
     deleteMessageFromCache: (root, args, { cache }) => {
