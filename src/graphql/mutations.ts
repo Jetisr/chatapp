@@ -66,6 +66,12 @@ export const DELETE_MESSAGE = gql`
   }
 `;
 
+export const DELETE_MESSAGE_FROM_CACHE = gql`
+  mutation deletedMessageFromCache($id: ID!) {
+    deleteMessageFromCache(id: $id) @client
+  }
+`;
+
 export const EDIT_MESSAGE = gql`
   mutation editMessage($messageId: ID!, $updatedText: String!) {
     editMessage(messageId: $messageId, updatedText: $updatedText) {
