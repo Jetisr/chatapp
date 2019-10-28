@@ -1,0 +1,17 @@
+{
+  "schema": "http://localhost:4000",
+  "documents": "./src/graphql/*.ts",
+  "config": {
+    "useIndexSignature": true
+  },
+  "generates": {
+    "src/typescript/codegen.ts": {
+      "plugins": [
+        "typescript",
+        "typescript-operations",
+        "typescript-resolvers"
+      ],
+      "schema": "src/client.ts"
+    }
+  }
+}
