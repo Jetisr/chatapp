@@ -1,4 +1,6 @@
+import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 export type Maybe<T> = T | null;
+export type RequireFields<T, K extends keyof T> = { [X in Exclude<keyof T, K>]?: T[X] } & { [P in K]-?: NonNullable<T[P]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string,
@@ -65,6 +67,9 @@ export type Mutation = {
   deleteMessage: Result,
   editMessage: Result,
   addAvatar: Result,
+  saveLogin: Scalars['String'],
+  logout: Scalars['String'],
+  deleteMessageFromCache: Scalars['String'],
 };
 
 
@@ -101,6 +106,16 @@ export type MutationEditMessageArgs = {
 
 export type MutationAddAvatarArgs = {
   avatar: Scalars['Upload']
+};
+
+
+export type MutationSaveLoginArgs = {
+  token: Scalars['String']
+};
+
+
+export type MutationDeleteMessageFromCacheArgs = {
+  id: Scalars['ID']
 };
 
 export type Query = {
@@ -145,6 +160,13 @@ export type SendMessageResult = Result & {
 export type Subscription = {
    __typename?: 'Subscription',
   messageAdded: Message,
+  messageDeleted: Scalars['ID'],
+  messageEdited: Message,
+};
+
+
+export type SubscriptionMessageEditedArgs = {
+  messageId?: Maybe<Scalars['ID']>
 };
 
 export type Token = {
@@ -169,7 +191,7 @@ export type MessageListMessageFragment = (
   & Pick<Message, 'id' | 'messageText'>
   & { user: (
     { __typename?: 'User' }
-    & Pick<User, 'id' | 'username'>
+    & Pick<User, 'id' | 'username' | 'email' | 'firstName' | 'lastName'>
   ) }
 );
 
@@ -302,6 +324,16 @@ export type DeleteMessageMutation = (
   ) }
 );
 
+export type DeletedMessageFromCacheMutationVariables = {
+  id: Scalars['ID']
+};
+
+
+export type DeletedMessageFromCacheMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deleteMessageFromCache'>
+);
+
 export type EditMessageMutationVariables = {
   messageId: Scalars['ID'],
   updatedText: Scalars['String']
@@ -432,3 +464,247 @@ export type NewMessagesSubscription = (
     ) }
   ) }
 );
+
+export type WithIndex<TObject> = TObject & Record<string, any>;
+export type ResolversObject<TObject> = WithIndex<TObject>;
+
+export type ResolverTypeWrapper<T> = Promise<T> | T;
+
+export type ResolverFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Promise<TResult> | TResult;
+
+
+export type StitchingResolver<TResult, TParent, TContext, TArgs> = {
+  fragment: string;
+  resolve: ResolverFn<TResult, TParent, TContext, TArgs>;
+};
+
+export type Resolver<TResult, TParent = {}, TContext = {}, TArgs = {}> =
+  | ResolverFn<TResult, TParent, TContext, TArgs>
+  | StitchingResolver<TResult, TParent, TContext, TArgs>;
+
+export type SubscriptionSubscribeFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => AsyncIterator<TResult> | Promise<AsyncIterator<TResult>>;
+
+export type SubscriptionResolveFn<TResult, TParent, TContext, TArgs> = (
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+export interface SubscriptionSubscriberObject<TResult, TKey extends string, TParent, TContext, TArgs> {
+  subscribe: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs>;
+  resolve?: SubscriptionResolveFn<TResult, { [key in TKey]: TResult }, TContext, TArgs>;
+}
+
+export interface SubscriptionResolverObject<TResult, TParent, TContext, TArgs> {
+  subscribe: SubscriptionSubscribeFn<any, TParent, TContext, TArgs>;
+  resolve: SubscriptionResolveFn<TResult, any, TContext, TArgs>;
+}
+
+export type SubscriptionObject<TResult, TKey extends string, TParent, TContext, TArgs> =
+  | SubscriptionSubscriberObject<TResult, TKey, TParent, TContext, TArgs>
+  | SubscriptionResolverObject<TResult, TParent, TContext, TArgs>;
+
+export type SubscriptionResolver<TResult, TKey extends string, TParent = {}, TContext = {}, TArgs = {}> =
+  | ((...args: any[]) => SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>)
+  | SubscriptionObject<TResult, TKey, TParent, TContext, TArgs>;
+
+export type TypeResolveFn<TTypes, TParent = {}, TContext = {}> = (
+  parent: TParent,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => Maybe<TTypes>;
+
+export type NextResolverFn<T> = () => Promise<T>;
+
+export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs = {}> = (
+  next: NextResolverFn<TResult>,
+  parent: TParent,
+  args: TArgs,
+  context: TContext,
+  info: GraphQLResolveInfo
+) => TResult | Promise<TResult>;
+
+/** Mapping between all available schema types and the resolvers types */
+export type ResolversTypes = ResolversObject<{
+  Query: ResolverTypeWrapper<{}>,
+  String: ResolverTypeWrapper<Scalars['String']>,
+  User: ResolverTypeWrapper<User>,
+  ID: ResolverTypeWrapper<Scalars['ID']>,
+  Message: ResolverTypeWrapper<Message>,
+  Boolean: ResolverTypeWrapper<Scalars['Boolean']>,
+  Mutation: ResolverTypeWrapper<{}>,
+  Result: ResolverTypeWrapper<Result>,
+  Upload: ResolverTypeWrapper<Scalars['Upload']>,
+  Subscription: ResolverTypeWrapper<{}>,
+  AddAvatarResult: ResolverTypeWrapper<AddAvatarResult>,
+  CacheControlScope: CacheControlScope,
+  CreateUserResult: ResolverTypeWrapper<CreateUserResult>,
+  DeleteMessageResult: ResolverTypeWrapper<DeleteMessageResult>,
+  EditMessageResult: ResolverTypeWrapper<EditMessageResult>,
+  LoginResult: ResolverTypeWrapper<LoginResult>,
+  SendMessageResult: ResolverTypeWrapper<SendMessageResult>,
+  Token: ResolverTypeWrapper<Token>,
+  Int: ResolverTypeWrapper<Scalars['Int']>,
+}>;
+
+/** Mapping between all available schema types and the resolvers parents */
+export type ResolversParentTypes = ResolversObject<{
+  Query: {},
+  String: Scalars['String'],
+  User: User,
+  ID: Scalars['ID'],
+  Message: Message,
+  Boolean: Scalars['Boolean'],
+  Mutation: {},
+  Result: Result,
+  Upload: Scalars['Upload'],
+  Subscription: {},
+  AddAvatarResult: AddAvatarResult,
+  CacheControlScope: CacheControlScope,
+  CreateUserResult: CreateUserResult,
+  DeleteMessageResult: DeleteMessageResult,
+  EditMessageResult: EditMessageResult,
+  LoginResult: LoginResult,
+  SendMessageResult: SendMessageResult,
+  Token: Token,
+  Int: Scalars['Int'],
+}>;
+
+export type CacheControlDirectiveResolver<Result, Parent, ContextType = any, Args = {   maxAge?: Maybe<Maybe<Scalars['Int']>>,
+  scope?: Maybe<Maybe<CacheControlScope>> }> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type AddAvatarResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['AddAvatarResult'] = ResolversParentTypes['AddAvatarResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  imageLocation?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+}>;
+
+export type CreateUserResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['CreateUserResult'] = ResolversParentTypes['CreateUserResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
+}>;
+
+export type DeleteMessageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['DeleteMessageResult'] = ResolversParentTypes['DeleteMessageResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+}>;
+
+export type EditMessageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['EditMessageResult'] = ResolversParentTypes['EditMessageResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  editedMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>,
+}>;
+
+export type LoginResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResult'] = ResolversParentTypes['LoginResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+}>;
+
+export type MessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['Message'] = ResolversParentTypes['Message']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  messageText?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>,
+}>;
+
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  createUser?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationCreateUserArgs, 'userName' | 'password' | 'email'>>,
+  login?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'login' | 'password'>>,
+  sendMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationSendMessageArgs, 'messageText'>>,
+  deleteMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationDeleteMessageArgs, 'messageId'>>,
+  editMessage?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationEditMessageArgs, 'messageId' | 'updatedText'>>,
+  addAvatar?: Resolver<ResolversTypes['Result'], ParentType, ContextType, RequireFields<MutationAddAvatarArgs, 'avatar'>>,
+  saveLogin?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationSaveLoginArgs, 'token'>>,
+  logout?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  deleteMessageFromCache?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationDeleteMessageFromCacheArgs, 'id'>>,
+}>;
+
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, QueryUserArgs>,
+  me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
+  allMessages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType, QueryAllMessagesArgs>,
+  message?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType, RequireFields<QueryMessageArgs, 'messageId'>>,
+  isLoggedIn?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+}>;
+
+export type ResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['Result'] = ResolversParentTypes['Result']> = ResolversObject<{
+  __resolveType: TypeResolveFn<'AddAvatarResult' | 'CreateUserResult' | 'DeleteMessageResult' | 'EditMessageResult' | 'LoginResult' | 'SendMessageResult', ParentType, ContextType>,
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+}>;
+
+export type SendMessageResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['SendMessageResult'] = ResolversParentTypes['SendMessageResult']> = ResolversObject<{
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>,
+  message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  sentMessage?: Resolver<Maybe<ResolversTypes['Message']>, ParentType, ContextType>,
+}>;
+
+export type SubscriptionResolvers<ContextType = any, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  messageAdded?: SubscriptionResolver<ResolversTypes['Message'], "messageAdded", ParentType, ContextType>,
+  messageDeleted?: SubscriptionResolver<ResolversTypes['ID'], "messageDeleted", ParentType, ContextType>,
+  messageEdited?: SubscriptionResolver<ResolversTypes['Message'], "messageEdited", ParentType, ContextType, SubscriptionMessageEditedArgs>,
+}>;
+
+export type TokenResolvers<ContextType = any, ParentType extends ResolversParentTypes['Token'] = ResolversParentTypes['Token']> = ResolversObject<{
+  token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+}>;
+
+export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Upload'], any> {
+  name: 'Upload'
+}
+
+export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  username?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  passwordHash?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  messages?: Resolver<Array<ResolversTypes['Message']>, ParentType, ContextType>,
+}>;
+
+export type Resolvers<ContextType = any> = ResolversObject<{
+  AddAvatarResult?: AddAvatarResultResolvers<ContextType>,
+  CreateUserResult?: CreateUserResultResolvers<ContextType>,
+  DeleteMessageResult?: DeleteMessageResultResolvers<ContextType>,
+  EditMessageResult?: EditMessageResultResolvers<ContextType>,
+  LoginResult?: LoginResultResolvers<ContextType>,
+  Message?: MessageResolvers<ContextType>,
+  Mutation?: MutationResolvers<ContextType>,
+  Query?: QueryResolvers<ContextType>,
+  Result?: ResultResolvers,
+  SendMessageResult?: SendMessageResultResolvers<ContextType>,
+  Subscription?: SubscriptionResolvers<ContextType>,
+  Token?: TokenResolvers<ContextType>,
+  Upload?: GraphQLScalarType,
+  User?: UserResolvers<ContextType>,
+}>;
+
+
+/**
+ * @deprecated
+ * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
+*/
+export type IResolvers<ContextType = any> = Resolvers<ContextType>;
+export type DirectiveResolvers<ContextType = any> = ResolversObject<{
+  cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>,
+}>;
+
+
+/**
+* @deprecated
+* Use "DirectiveResolvers" root object instead. If you wish to get "IDirectiveResolvers", add "typesPrefix: I" to your config.
+*/
+export type IDirectiveResolvers<ContextType = any> = DirectiveResolvers<ContextType>;
