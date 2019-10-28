@@ -460,7 +460,7 @@ export type NewMessagesSubscription = (
     & Pick<Message, 'id' | 'messageText'>
     & { user: (
       { __typename?: 'User' }
-      & Pick<User, 'id' | 'username'>
+      & Pick<User, 'id' | 'username' | 'email' | 'firstName' | 'lastName'>
     ) }
   ) }
 );

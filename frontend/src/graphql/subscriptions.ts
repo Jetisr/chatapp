@@ -8,6 +8,9 @@ export const SUBSCRIBE_TO_NEW_MESSAGES = gql`
       user {
         id
         username
+        email
+        firstName
+        lastName
       }
     }
   }
