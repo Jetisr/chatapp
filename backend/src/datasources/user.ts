@@ -45,6 +45,7 @@ class UserAPI extends DataSource {
     user.username = userName.toLowerCase();
     user.email = email.toLowerCase();
     user.passwordHash = passwordHash;
+    user.messages = [];
     if (firstName) user.firstName = firstName;
     if (lastName) user.lastName = lastName;
     return this.repository.save(user);
