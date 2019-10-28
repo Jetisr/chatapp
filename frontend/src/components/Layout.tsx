@@ -6,11 +6,13 @@ import {
   createStyles,
   IconButton,
   makeStyles,
+  Menu,
+  MenuItem,
   Toolbar,
   Typography
 } from "@material-ui/core";
 import { AccountCircleOutlined } from "@material-ui/icons";
-import React from "react";
+import React, { useState, useRef } from "react";
 import { IsLoggedInQuery } from "../typescript/codegen";
 import { IS_LOGGED_IN } from "../graphql/queries";
 
@@ -25,6 +27,17 @@ const useStyles = makeStyles(() =>
 const Layout: React.FC = ({ children }) => {
   const { data, loading } = useQuery<IsLoggedInQuery>(IS_LOGGED_IN);
   const classes = useStyles();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const anchorElement = useRef<SVGSVGElement | null>(null);
+
+  const handleMenuClose = () => {
+    setMenuOpen(false);
+  };
+
+  const handleMenuOpen = () => {
+    setMenuOpen(true);
+  };
+
   return (
     <>
       <AppBar position="sticky">
@@ -33,9 +46,22 @@ const Layout: React.FC = ({ children }) => {
             Chat App
           </Typography>
           {!loading && data && data.isLoggedIn && (
-            <IconButton color="inherit">
-              <AccountCircleOutlined />
-            </IconButton>
+            <>
+              <IconButton color="inherit" onClick={handleMenuOpen}>
+                <AccountCircleOutlined ref={anchorElement} />
+              </IconButton>
+              <Menu
+                anchorEl={anchorElement.current}
+                getContentAnchorEl={null}
+                anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                transformOrigin={{ vertical: "top", horizontal: "center" }}
+                keepMounted
+                open={menuOpen}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+              </Menu>
+            </>
           )}
         </Toolbar>
       </AppBar>
