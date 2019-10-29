@@ -10,7 +10,9 @@ import {
   Dialog,
   DialogTitle,
   TextField,
-  DialogContent
+  DialogContent,
+  DialogActions,
+  Button
 } from "@material-ui/core";
 import { DeleteOutline, EditOutlined } from "@material-ui/icons";
 import React, { useState } from "react";
@@ -99,6 +101,12 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
               <DialogContent>
                 <TextField autoFocus fullWidth />
               </DialogContent>
+              <DialogActions>
+                <Button onClick={toggleEdit} color="primary">
+                  Cancel
+                </Button>
+                <Button color="primary">Submit</Button>
+              </DialogActions>
             </Dialog>
           </>
         )}
