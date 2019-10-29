@@ -45,12 +45,15 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
     DeletedMessageFromCacheMutation,
     DeletedMessageFromCacheMutationVariables
   >(DELETE_MESSAGE_FROM_CACHE, { variables: { id: message.id } });
-  const [editMessage] = useMutation<
+  const [editMessageMutation] = useMutation<
     EditMessageMutation,
     EditMessageMutationVariables
   >(EDIT_MESSAGE);
 
   const [editMode, setEditMode] = useState(false);
+  const [messageTextForEditing, setMessageTextForEditing] = useState(
+    message.messageText
+  );
 
   const deleteMessage = async () => {
     const deleteMessageResult = await deleteMessageFromServer();
@@ -64,6 +67,16 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
 
   const toggleEdit = () => {
     setEditMode(current => !current);
+  };
+
+  const editMessage = () => {
+    toggleEdit();
+    editMessageMutation({
+      variables: {
+        messageId: message.id,
+        updatedText: messageTextForEditing
+      }
+    });
   };
 
   return (
@@ -99,13 +112,33 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
             <Dialog open={editMode} onClose={toggleEdit}>
               <DialogTitle>Edit Message</DialogTitle>
               <DialogContent>
-                <TextField autoFocus fullWidth />
+                <TextField
+                  autoFocus
+                  fullWidth
+                  value={messageTextForEditing}
+                  onChange={({ target }) =>
+                    setMessageTextForEditing(target.value)
+                  }
+                  onKeyPress={({ key }) => {
+                    // OnKeyDown and OnKeyUp doesn't toggle the dialog properly
+                    if (key === "Enter") {
+                      editMessage();
+                    }
+                  }}
+                />
               </DialogContent>
               <DialogActions>
                 <Button onClick={toggleEdit} color="primary">
                   Cancel
                 </Button>
-                <Button color="primary">Submit</Button>
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    editMessage();
+                  }}
+                >
+                  Submit
+                </Button>
               </DialogActions>
             </Dialog>
           </>
