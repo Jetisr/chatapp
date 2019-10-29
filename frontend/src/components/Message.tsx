@@ -31,6 +31,7 @@ import {
   EditMessageMutation,
   EditMessageMutationVariables
 } from "../typescript/codegen";
+import useConfirmDialog from "../hooks/useConfirmDialog";
 
 interface Props {
   message: MessageListMessageFragment;
@@ -52,18 +53,26 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
   >(EDIT_MESSAGE);
 
   const [editMode, setEditMode] = useState(false);
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [messageTextForEditing, setMessageTextForEditing] = useState(
     message.messageText
   );
+  const { ConfirmDialog, confirm } = useConfirmDialog();
 
   const deleteMessage = async () => {
-    const deleteMessageResult = await deleteMessageFromServer();
     if (
-      deleteMessageResult.data &&
-      deleteMessageResult.data.deleteMessage.success
+      await confirm({
+        title: "Delete Message?",
+        message:
+          "Deleting a message is permanent. Are you sure you want to do this?"
+      })
     ) {
-      deleteMessageFromCache();
+      const deleteMessageResult = await deleteMessageFromServer();
+      if (
+        deleteMessageResult.data &&
+        deleteMessageResult.data.deleteMessage.success
+      ) {
+        deleteMessageFromCache();
+      }
     }
   };
 
@@ -106,7 +115,7 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
                 color="primary"
                 edge="end"
                 aria-label="delete"
-                onClick={() => setDeleteConfirmOpen(true)}
+                onClick={deleteMessage}
               >
                 <DeleteOutline />
               </IconButton>
@@ -143,35 +152,7 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
                 </Button>
               </DialogActions>
             </Dialog>
-            <Dialog
-              open={deleteConfirmOpen}
-              onClose={() => setDeleteConfirmOpen(false)}
-            >
-              <DialogTitle>Delete message?</DialogTitle>
-              <DialogContent>
-                <DialogContentText>
-                  Deleting a message is permanent. Are you sure you want to do
-                  this?
-                </DialogContentText>
-              </DialogContent>
-              <DialogActions>
-                <Button
-                  onClick={() => setDeleteConfirmOpen(false)}
-                  color="primary"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={() => {
-                    deleteMessage();
-                    setDeleteConfirmOpen(false);
-                  }}
-                  color="primary"
-                >
-                  Confirm
-                </Button>
-              </DialogActions>
-            </Dialog>
+            <ConfirmDialog />
           </>
         )}
       </ListItem>
