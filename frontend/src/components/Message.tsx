@@ -12,7 +12,8 @@ import {
   TextField,
   DialogContent,
   DialogActions,
-  Button
+  Button,
+  DialogContentText
 } from "@material-ui/core";
 import { DeleteOutline, EditOutlined } from "@material-ui/icons";
 import React, { useState } from "react";
@@ -51,6 +52,7 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
   >(EDIT_MESSAGE);
 
   const [editMode, setEditMode] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [messageTextForEditing, setMessageTextForEditing] = useState(
     message.messageText
   );
@@ -104,7 +106,7 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
                 color="primary"
                 edge="end"
                 aria-label="delete"
-                onClick={deleteMessage}
+                onClick={() => setDeleteConfirmOpen(true)}
               >
                 <DeleteOutline />
               </IconButton>
@@ -138,6 +140,35 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
                   }}
                 >
                   Submit
+                </Button>
+              </DialogActions>
+            </Dialog>
+            <Dialog
+              open={deleteConfirmOpen}
+              onClose={() => setDeleteConfirmOpen(false)}
+            >
+              <DialogTitle>Delete message?</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Deleting a message is permanent. Are you sure you want to do
+                  this?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={() => setDeleteConfirmOpen(false)}
+                  color="primary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    deleteMessage();
+                    setDeleteConfirmOpen(false);
+                  }}
+                  color="primary"
+                >
+                  Confirm
                 </Button>
               </DialogActions>
             </Dialog>
