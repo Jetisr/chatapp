@@ -8,8 +8,8 @@ import {
   ListItemAvatar,
   Avatar
 } from "@material-ui/core";
-import { DeleteOutline } from "@material-ui/icons";
-import React from "react";
+import { DeleteOutline, EditOutlined } from "@material-ui/icons";
+import React, { useState } from "react";
 import {
   DELETE_MESSAGE,
   DELETE_MESSAGE_FROM_CACHE
@@ -24,10 +24,10 @@ import {
 
 interface Props {
   message: MessageListMessageFragment;
-  canDelete: boolean;
+  isOwner: boolean;
 }
 
-const Message: React.FC<Props> = ({ message, canDelete }) => {
+const Message: React.FC<Props> = ({ message, isOwner }) => {
   const [deleteMessageFromServer] = useMutation<
     DeleteMessageMutation,
     DeleteMessageMutationVariables
@@ -36,6 +36,8 @@ const Message: React.FC<Props> = ({ message, canDelete }) => {
     DeletedMessageFromCacheMutation,
     DeletedMessageFromCacheMutationVariables
   >(DELETE_MESSAGE_FROM_CACHE, { variables: { id: message.id } });
+
+  const [editMode, setEditMode] = useState(false);
 
   const deleteMessage = async () => {
     const deleteMessageResult = await deleteMessageFromServer();
@@ -57,8 +59,16 @@ const Message: React.FC<Props> = ({ message, canDelete }) => {
           primary={message.user.username}
           secondary={message.messageText}
         />
-        {canDelete && (
+        {isOwner && (
           <ListItemSecondaryAction>
+            <IconButton
+              color="primary"
+              edge="end"
+              aria-label="edit"
+              onClick={() => setEditMode(current => !current)}
+            >
+              <EditOutlined />
+            </IconButton>
             <IconButton
               color="primary"
               edge="end"
