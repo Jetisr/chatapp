@@ -16,14 +16,17 @@ import { DeleteOutline, EditOutlined } from "@material-ui/icons";
 import React, { useState } from "react";
 import {
   DELETE_MESSAGE,
-  DELETE_MESSAGE_FROM_CACHE
+  DELETE_MESSAGE_FROM_CACHE,
+  EDIT_MESSAGE
 } from "../graphql/mutations";
 import {
   DeleteMessageMutation,
   DeleteMessageMutationVariables,
   MessageListMessageFragment,
   DeletedMessageFromCacheMutation,
-  DeletedMessageFromCacheMutationVariables
+  DeletedMessageFromCacheMutationVariables,
+  EditMessageMutation,
+  EditMessageMutationVariables
 } from "../typescript/codegen";
 
 interface Props {
@@ -40,6 +43,11 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
     DeletedMessageFromCacheMutation,
     DeletedMessageFromCacheMutationVariables
   >(DELETE_MESSAGE_FROM_CACHE, { variables: { id: message.id } });
+  const [editMessage] = useMutation<
+    EditMessageMutation,
+    EditMessageMutationVariables
+  >(EDIT_MESSAGE);
+
   const [editMode, setEditMode] = useState(false);
 
   const deleteMessage = async () => {
