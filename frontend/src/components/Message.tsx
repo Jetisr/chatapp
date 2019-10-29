@@ -6,28 +6,37 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   ListItemAvatar,
-  Avatar
+  Avatar,
+  Dialog,
+  DialogTitle,
+  TextField,
+  DialogContent,
+  DialogActions,
+  Button
 } from "@material-ui/core";
-import { DeleteOutline } from "@material-ui/icons";
-import React from "react";
+import { DeleteOutline, EditOutlined } from "@material-ui/icons";
+import React, { useState } from "react";
 import {
   DELETE_MESSAGE,
-  DELETE_MESSAGE_FROM_CACHE
+  DELETE_MESSAGE_FROM_CACHE,
+  EDIT_MESSAGE
 } from "../graphql/mutations";
 import {
   DeleteMessageMutation,
   DeleteMessageMutationVariables,
   MessageListMessageFragment,
   DeletedMessageFromCacheMutation,
-  DeletedMessageFromCacheMutationVariables
+  DeletedMessageFromCacheMutationVariables,
+  EditMessageMutation,
+  EditMessageMutationVariables
 } from "../typescript/codegen";
 
 interface Props {
   message: MessageListMessageFragment;
-  canDelete: boolean;
+  isOwner: boolean;
 }
 
-const Message: React.FC<Props> = ({ message, canDelete }) => {
+const Message: React.FC<Props> = ({ message, isOwner }) => {
   const [deleteMessageFromServer] = useMutation<
     DeleteMessageMutation,
     DeleteMessageMutationVariables
@@ -36,6 +45,15 @@ const Message: React.FC<Props> = ({ message, canDelete }) => {
     DeletedMessageFromCacheMutation,
     DeletedMessageFromCacheMutationVariables
   >(DELETE_MESSAGE_FROM_CACHE, { variables: { id: message.id } });
+  const [editMessageMutation] = useMutation<
+    EditMessageMutation,
+    EditMessageMutationVariables
+  >(EDIT_MESSAGE);
+
+  const [editMode, setEditMode] = useState(false);
+  const [messageTextForEditing, setMessageTextForEditing] = useState(
+    message.messageText
+  );
 
   const deleteMessage = async () => {
     const deleteMessageResult = await deleteMessageFromServer();
@@ -45,6 +63,20 @@ const Message: React.FC<Props> = ({ message, canDelete }) => {
     ) {
       deleteMessageFromCache();
     }
+  };
+
+  const toggleEdit = () => {
+    setEditMode(current => !current);
+  };
+
+  const editMessage = () => {
+    toggleEdit();
+    editMessageMutation({
+      variables: {
+        messageId: message.id,
+        updatedText: messageTextForEditing
+      }
+    });
   };
 
   return (
@@ -57,17 +89,59 @@ const Message: React.FC<Props> = ({ message, canDelete }) => {
           primary={message.user.username}
           secondary={message.messageText}
         />
-        {canDelete && (
-          <ListItemSecondaryAction>
-            <IconButton
-              color="primary"
-              edge="end"
-              aria-label="delete"
-              onClick={deleteMessage}
-            >
-              <DeleteOutline />
-            </IconButton>
-          </ListItemSecondaryAction>
+        {isOwner && (
+          <>
+            <ListItemSecondaryAction>
+              <IconButton
+                color="primary"
+                edge="end"
+                aria-label="edit"
+                onClick={toggleEdit}
+              >
+                <EditOutlined />
+              </IconButton>
+              <IconButton
+                color="primary"
+                edge="end"
+                aria-label="delete"
+                onClick={deleteMessage}
+              >
+                <DeleteOutline />
+              </IconButton>
+            </ListItemSecondaryAction>
+            <Dialog open={editMode} onClose={toggleEdit}>
+              <DialogTitle>Edit Message</DialogTitle>
+              <DialogContent>
+                <TextField
+                  autoFocus
+                  fullWidth
+                  value={messageTextForEditing}
+                  onChange={({ target }) =>
+                    setMessageTextForEditing(target.value)
+                  }
+                  onKeyPress={({ key }) => {
+                    // OnKeyDown and OnKeyUp doesn't toggle the dialog properly
+                    if (key === "Enter") {
+                      editMessage();
+                    }
+                  }}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={toggleEdit} color="primary">
+                  Cancel
+                </Button>
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    editMessage();
+                  }}
+                >
+                  Submit
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </>
         )}
       </ListItem>
       <Divider />

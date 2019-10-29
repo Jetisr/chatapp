@@ -83,7 +83,7 @@ const ChatRoom: React.FC = () => {
             <Message
               key={m.id}
               message={m}
-              canDelete={
+              isOwner={
                 (currentUser &&
                   currentUser.me &&
                   currentUser.me.username === m.user.username) ||
