@@ -6,7 +6,11 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   ListItemAvatar,
-  Avatar
+  Avatar,
+  Dialog,
+  DialogTitle,
+  TextField,
+  DialogContent
 } from "@material-ui/core";
 import { DeleteOutline, EditOutlined } from "@material-ui/icons";
 import React, { useState } from "react";
@@ -36,7 +40,6 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
     DeletedMessageFromCacheMutation,
     DeletedMessageFromCacheMutationVariables
   >(DELETE_MESSAGE_FROM_CACHE, { variables: { id: message.id } });
-
   const [editMode, setEditMode] = useState(false);
 
   const deleteMessage = async () => {
@@ -47,6 +50,10 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
     ) {
       deleteMessageFromCache();
     }
+  };
+
+  const toggleEdit = () => {
+    setEditMode(current => !current);
   };
 
   return (
@@ -60,24 +67,32 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
           secondary={message.messageText}
         />
         {isOwner && (
-          <ListItemSecondaryAction>
-            <IconButton
-              color="primary"
-              edge="end"
-              aria-label="edit"
-              onClick={() => setEditMode(current => !current)}
-            >
-              <EditOutlined />
-            </IconButton>
-            <IconButton
-              color="primary"
-              edge="end"
-              aria-label="delete"
-              onClick={deleteMessage}
-            >
-              <DeleteOutline />
-            </IconButton>
-          </ListItemSecondaryAction>
+          <>
+            <ListItemSecondaryAction>
+              <IconButton
+                color="primary"
+                edge="end"
+                aria-label="edit"
+                onClick={toggleEdit}
+              >
+                <EditOutlined />
+              </IconButton>
+              <IconButton
+                color="primary"
+                edge="end"
+                aria-label="delete"
+                onClick={deleteMessage}
+              >
+                <DeleteOutline />
+              </IconButton>
+            </ListItemSecondaryAction>
+            <Dialog open={editMode} onClose={toggleEdit}>
+              <DialogTitle>Edit Message</DialogTitle>
+              <DialogContent>
+                <TextField autoFocus fullWidth />
+              </DialogContent>
+            </Dialog>
+          </>
         )}
       </ListItem>
       <Divider />
