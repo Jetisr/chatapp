@@ -6,17 +6,10 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   ListItemAvatar,
-  Avatar,
-  Dialog,
-  DialogTitle,
-  TextField,
-  DialogContent,
-  DialogActions,
-  Button,
-  DialogContentText
+  Avatar
 } from "@material-ui/core";
 import { DeleteOutline, EditOutlined } from "@material-ui/icons";
-import React, { useState } from "react";
+import React from "react";
 import {
   DELETE_MESSAGE,
   DELETE_MESSAGE_FROM_CACHE,
@@ -31,7 +24,7 @@ import {
   EditMessageMutation,
   EditMessageMutationVariables
 } from "../typescript/codegen";
-import useConfirmDialog from "../hooks/useConfirmDialog";
+import { useModal } from "../contexts/ModalContext";
 
 interface Props {
   message: MessageListMessageFragment;
@@ -52,17 +45,13 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
     EditMessageMutationVariables
   >(EDIT_MESSAGE);
 
-  const [editMode, setEditMode] = useState(false);
-  const [messageTextForEditing, setMessageTextForEditing] = useState(
-    message.messageText
-  );
-  const { ConfirmDialog, confirm } = useConfirmDialog();
+  const { confirm, form } = useModal();
 
   const deleteMessage = async () => {
     if (
       await confirm({
         title: "Delete Message?",
-        message:
+        description:
           "Deleting a message is permanent. Are you sure you want to do this?"
       })
     ) {
@@ -76,16 +65,17 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
     }
   };
 
-  const toggleEdit = () => {
-    setEditMode(current => !current);
-  };
-
   const editMessage = () => {
-    toggleEdit();
-    editMessageMutation({
-      variables: {
-        messageId: message.id,
-        updatedText: messageTextForEditing
+    form({
+      title: "Edit Message",
+      initialValue: message.messageText,
+      onConfirm: formValue => {
+        editMessageMutation({
+          variables: {
+            messageId: message.id,
+            updatedText: formValue
+          }
+        });
       }
     });
   };
@@ -107,7 +97,7 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
                 color="primary"
                 edge="end"
                 aria-label="edit"
-                onClick={toggleEdit}
+                onClick={editMessage}
               >
                 <EditOutlined />
               </IconButton>
@@ -120,39 +110,6 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
                 <DeleteOutline />
               </IconButton>
             </ListItemSecondaryAction>
-            <Dialog open={editMode} onClose={toggleEdit}>
-              <DialogTitle>Edit Message</DialogTitle>
-              <DialogContent>
-                <TextField
-                  autoFocus
-                  fullWidth
-                  value={messageTextForEditing}
-                  onChange={({ target }) =>
-                    setMessageTextForEditing(target.value)
-                  }
-                  onKeyPress={({ key }) => {
-                    // OnKeyDown and OnKeyUp doesn't toggle the dialog properly
-                    if (key === "Enter") {
-                      editMessage();
-                    }
-                  }}
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={toggleEdit} color="primary">
-                  Cancel
-                </Button>
-                <Button
-                  color="primary"
-                  onClick={() => {
-                    editMessage();
-                  }}
-                >
-                  Submit
-                </Button>
-              </DialogActions>
-            </Dialog>
-            <ConfirmDialog />
           </>
         )}
       </ListItem>
