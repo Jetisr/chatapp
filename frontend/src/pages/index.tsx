@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { PrivateRoute } from "../components";
+import { PrivateRoute, Modal } from "../components";
 import ChatRoom from "./ChatRoom";
 import UserAuth from "./UserAuth";
 
@@ -14,6 +14,7 @@ const Pages: React.FC = () => (
         <ChatRoom />
       </PrivateRoute>
     </Switch>
+    <Modal />
   </Router>
 );
 
