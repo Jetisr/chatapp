@@ -21,3 +21,12 @@ export const SUBSCRIBE_TO_DELETIONS = gql`
     messageDeleted
   }
 `;
+
+export const SUBSCRIBE_TO_EDITS = gql`
+  subscription editsToMessage {
+    messageEdited {
+      id
+      messageText
+    }
+  }
+`;
