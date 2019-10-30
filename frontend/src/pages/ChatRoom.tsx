@@ -16,7 +16,8 @@ import { Message } from "../components";
 import { ALL_MESSAGES, ME } from "../graphql/queries";
 import {
   SUBSCRIBE_TO_NEW_MESSAGES,
-  SUBSCRIBE_TO_DELETIONS
+  SUBSCRIBE_TO_DELETIONS,
+  SUBSCRIBE_TO_EDITS
 } from "../graphql/subscriptions";
 import {
   AllMessagesQuery,
@@ -26,9 +27,16 @@ import {
   MeQuery,
   DeletedMessageFromCacheMutation,
   DeletedMessageFromCacheMutationVariables,
-  DeleteMessagesSubscription
+  DeleteMessagesSubscription,
+  EditsToMessageSubscription,
+  EditMessageInCacheMutation,
+  EditMessageInCacheMutationVariables
 } from "../typescript/codegen";
-import { SEND_MESSAGE, DELETE_MESSAGE_FROM_CACHE } from "../graphql/mutations";
+import {
+  SEND_MESSAGE,
+  DELETE_MESSAGE_FROM_CACHE,
+  EDIT_MESSAGE_IN_CACHE
+} from "../graphql/mutations";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,6 +69,10 @@ const ChatRoom: React.FC = () => {
     DeletedMessageFromCacheMutation,
     DeletedMessageFromCacheMutationVariables
   >(DELETE_MESSAGE_FROM_CACHE);
+  const [editMessageInCache] = useMutation<
+    EditMessageInCacheMutation,
+    EditMessageInCacheMutationVariables
+  >(EDIT_MESSAGE_IN_CACHE);
 
   useSubscription<NewMessagesSubscription>(SUBSCRIBE_TO_NEW_MESSAGES, {
     onSubscriptionData: ({ subscriptionData, client }) => {
@@ -84,6 +96,19 @@ const ChatRoom: React.FC = () => {
       if (subscriptionData.data) {
         deleteMessageFromCache({
           variables: { id: subscriptionData.data.messageDeleted }
+        });
+      }
+    }
+  });
+
+  useSubscription<EditsToMessageSubscription>(SUBSCRIBE_TO_EDITS, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      if (subscriptionData.data) {
+        editMessageInCache({
+          variables: {
+            id: subscriptionData.data.messageEdited.id,
+            text: subscriptionData.data.messageEdited.messageText
+          }
         });
       }
     }
