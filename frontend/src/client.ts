@@ -87,7 +87,9 @@ const cache = new InMemoryCache({
   }
 });
 
-const uploadLink = createUploadLink({ uri: "http://192.168.1.231:4000" });
+const uploadLink = createUploadLink({
+  uri: "http://192.168.1.231:4000/graphql"
+});
 const wsLink = new WebSocketLink({
   uri: "ws://192.168.1.231:4000/graphql",
   options: {

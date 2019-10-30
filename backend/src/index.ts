@@ -1,4 +1,7 @@
-import { ApolloServer } from "apollo-server";
+import { ApolloServer } from "apollo-server-express";
+import bodyParser from "body-parser";
+import express from "express";
+import http from "http";
 import jwt from "jsonwebtoken";
 import { createConnection } from "typeorm";
 import UserAPI from "./datasources/user";
@@ -9,6 +12,13 @@ import { JWT_SECRET } from "./utilities/config";
 import MessageAPI from "./datasources/message";
 
 createConnection().then(connection => {
+  const app = express();
+
+  app.use(bodyParser.json());
+  app.use(express.static("public"));
+
+  const httpServer = http.createServer(app);
+
   const server = new ApolloServer({
     typeDefs,
     resolvers,
@@ -35,8 +45,10 @@ createConnection().then(connection => {
     }
   });
 
-  server.listen().then(({ url, subscriptionsUrl }) => {
-    console.log(`Apollo running on ${url}`);
-    console.log(`Subscriptions available at ${subscriptionsUrl}`);
+  server.applyMiddleware({ app, path: "/graphql" });
+  server.installSubscriptionHandlers(httpServer);
+
+  httpServer.listen({ port: 4000 }, () => {
+    console.log("apollo running on http://localhost:4000/graphql");
   });
 });
