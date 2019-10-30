@@ -473,6 +473,14 @@ export type NewMessagesSubscription = (
   ) }
 );
 
+export type DeleteMessagesSubscriptionVariables = {};
+
+
+export type DeleteMessagesSubscription = (
+  { __typename?: 'Subscription' }
+  & Pick<Subscription, 'messageDeleted'>
+);
+
 export type WithIndex<TObject> = TObject & Record<string, any>;
 export type ResolversObject<TObject> = WithIndex<TObject>;
 
