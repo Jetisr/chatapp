@@ -1,7 +1,6 @@
 import { useQuery, useApolloClient, useMutation } from "@apollo/react-hooks";
 import {
   AppBar,
-  Button,
   Container,
   createStyles,
   IconButton,
