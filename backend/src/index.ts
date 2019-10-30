@@ -15,6 +15,7 @@ createConnection().then(connection => {
   const app = express();
 
   app.use(bodyParser.json());
+  app.use(express.static("public"));
 
   const httpServer = http.createServer(app);
 
