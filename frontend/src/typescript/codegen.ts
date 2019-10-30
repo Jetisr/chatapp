@@ -70,6 +70,7 @@ export type Mutation = {
   saveLogin: Scalars['String'],
   logout: Scalars['String'],
   deleteMessageFromCache: Scalars['String'],
+  editMessageInCache: Scalars['String'],
 };
 
 
@@ -116,6 +117,12 @@ export type MutationSaveLoginArgs = {
 
 export type MutationDeleteMessageFromCacheArgs = {
   id: Scalars['ID']
+};
+
+
+export type MutationEditMessageInCacheArgs = {
+  id: Scalars['ID'],
+  text: Scalars['String']
 };
 
 export type Query = {
@@ -403,6 +410,17 @@ export type LogoutMutation = (
   & Pick<Mutation, 'logout'>
 );
 
+export type EditMessageInCacheMutationVariables = {
+  id: Scalars['ID'],
+  text: Scalars['String']
+};
+
+
+export type EditMessageInCacheMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'editMessageInCache'>
+);
+
 export type MeQueryVariables = {};
 
 
@@ -479,6 +497,17 @@ export type DeleteMessagesSubscriptionVariables = {};
 export type DeleteMessagesSubscription = (
   { __typename?: 'Subscription' }
   & Pick<Subscription, 'messageDeleted'>
+);
+
+export type EditsToMessageSubscriptionVariables = {};
+
+
+export type EditsToMessageSubscription = (
+  { __typename?: 'Subscription' }
+  & { messageEdited: (
+    { __typename?: 'Message' }
+    & Pick<Message, 'id' | 'messageText'>
+  ) }
 );
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -645,6 +674,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   saveLogin?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationSaveLoginArgs, 'token'>>,
   logout?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
   deleteMessageFromCache?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationDeleteMessageFromCacheArgs, 'id'>>,
+  editMessageInCache?: Resolver<ResolversTypes['String'], ParentType, ContextType, RequireFields<MutationEditMessageInCacheArgs, 'id' | 'text'>>,
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{

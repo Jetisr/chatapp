@@ -8,8 +8,13 @@ import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 import { createUploadLink } from "apollo-upload-client";
 import gql from "graphql-tag";
-import { Resolvers, AllMessagesQuery } from "./typescript/codegen";
-import { ALL_MESSAGES } from "./graphql/queries";
+import {
+  Resolvers,
+  AllMessagesQuery,
+  MessageQuery,
+  MessageQueryVariables
+} from "./typescript/codegen";
+import { ALL_MESSAGES, MESSAGE } from "./graphql/queries";
 
 const typeDefs = gql`
   extend type Query {
@@ -20,6 +25,7 @@ const typeDefs = gql`
     saveLogin(token: String!): String!
     logout: String!
     deleteMessageFromCache(id: ID!): String!
+    editMessageInCache(id: ID!, text: String!): String!
   }
 `;
 
@@ -51,6 +57,23 @@ const resolvers: Resolvers<{ cache: InMemoryCache }> = {
       }
 
       return "Error deleting message. Cache read query returned null";
+    },
+    editMessageInCache: (root, args, { cache }) => {
+      const messageToEdit = cache.readQuery<
+        MessageQuery,
+        MessageQueryVariables
+      >({ query: MESSAGE, variables: { messageId: args.id } });
+      if (messageToEdit && messageToEdit.message) {
+        cache.writeQuery<MessageQuery, MessageQueryVariables>({
+          query: MESSAGE,
+          variables: { messageId: args.id },
+          data: {
+            message: { ...messageToEdit.message, messageText: args.text }
+          }
+        });
+        return "Success";
+      }
+      return "Couldn't find message";
     }
   }
 };
