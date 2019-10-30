@@ -100,3 +100,9 @@ export const LOGOUT = gql`
     logout @client
   }
 `;
+
+export const EDIT_MESSAGE_IN_CACHE = gql`
+  mutation editMessageInCache($id: ID!, $text: String!) {
+    editMessageInCache(id: $id, text: $text) @client
+  }
+`;

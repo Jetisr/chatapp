@@ -410,6 +410,17 @@ export type LogoutMutation = (
   & Pick<Mutation, 'logout'>
 );
 
+export type EditMessageInCacheMutationVariables = {
+  id: Scalars['ID'],
+  text: Scalars['String']
+};
+
+
+export type EditMessageInCacheMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'editMessageInCache'>
+);
+
 export type MeQueryVariables = {};
 
 
