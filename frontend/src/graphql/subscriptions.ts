@@ -15,3 +15,9 @@ export const SUBSCRIBE_TO_NEW_MESSAGES = gql`
     }
   }
 `;
+
+export const SUBSCRIBE_TO_DELETIONS = gql`
+  subscription deleteMessages {
+    messageDeleted
+  }
+`;

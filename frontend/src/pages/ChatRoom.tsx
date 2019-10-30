@@ -14,15 +14,21 @@ import { SendOutlined } from "@material-ui/icons";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { Message } from "../components";
 import { ALL_MESSAGES, ME } from "../graphql/queries";
-import { SUBSCRIBE_TO_NEW_MESSAGES } from "../graphql/subscriptions";
+import {
+  SUBSCRIBE_TO_NEW_MESSAGES,
+  SUBSCRIBE_TO_DELETIONS
+} from "../graphql/subscriptions";
 import {
   AllMessagesQuery,
   NewMessagesSubscription,
   SendMessageMutation,
   SendMessageMutationVariables,
-  MeQuery
+  MeQuery,
+  DeletedMessageFromCacheMutation,
+  DeletedMessageFromCacheMutationVariables,
+  DeleteMessagesSubscription
 } from "../typescript/codegen";
-import { SEND_MESSAGE } from "../graphql/mutations";
+import { SEND_MESSAGE, DELETE_MESSAGE_FROM_CACHE } from "../graphql/mutations";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,6 +57,10 @@ const ChatRoom: React.FC = () => {
     SendMessageMutation,
     SendMessageMutationVariables
   >(SEND_MESSAGE, { variables: { messageText: message } });
+  const [deleteMessageFromCache] = useMutation<
+    DeletedMessageFromCacheMutation,
+    DeletedMessageFromCacheMutationVariables
+  >(DELETE_MESSAGE_FROM_CACHE);
 
   useSubscription<NewMessagesSubscription>(SUBSCRIBE_TO_NEW_MESSAGES, {
     onSubscriptionData: ({ subscriptionData, client }) => {
@@ -66,6 +76,16 @@ const ChatRoom: React.FC = () => {
           ]
         }
       });
+    }
+  });
+
+  useSubscription<DeleteMessagesSubscription>(SUBSCRIBE_TO_DELETIONS, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      if (subscriptionData.data) {
+        deleteMessageFromCache({
+          variables: { id: subscriptionData.data.messageDeleted }
+        });
+      }
     }
   });
 
