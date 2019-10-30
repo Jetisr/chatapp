@@ -5,12 +5,15 @@ import React from "react";
 import { render } from "react-dom";
 import App from "./App";
 import client from "./client";
+import { ModalProvider } from "./contexts/ModalContext";
 
 const Context: React.FC = ({ children }) => {
   const theme = createMuiTheme();
   return (
     <ApolloProvider client={client}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <ModalProvider>{children}</ModalProvider>
+      </ThemeProvider>
     </ApolloProvider>
   );
 };
