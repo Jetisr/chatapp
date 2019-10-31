@@ -1,5 +1,4 @@
 import { ApolloServer } from "apollo-server-express";
-import bodyParser from "body-parser";
 import express from "express";
 import http from "http";
 import jwt from "jsonwebtoken";
@@ -13,11 +12,9 @@ import MessageAPI from "./datasources/message";
 
 createConnection().then(connection => {
   const app = express();
+  const port = process.env.PORT || 4000;
 
-  app.use(bodyParser.json());
   app.use(express.static("public"));
-
-  const httpServer = http.createServer(app);
 
   const server = new ApolloServer({
     typeDefs,
@@ -46,9 +43,15 @@ createConnection().then(connection => {
   });
 
   server.applyMiddleware({ app, path: "/graphql" });
+  const httpServer = http.createServer(app);
   server.installSubscriptionHandlers(httpServer);
 
-  httpServer.listen({ port: 4000 }, () => {
-    console.log("apollo running on http://localhost:4000/graphql");
+  httpServer.listen({ port }, () => {
+    console.log(
+      `🚀 Server ready at http://localhost:${port}${server.graphqlPath}`
+    );
+    console.log(
+      `🚀 Subscriptions ready at ws://localhost:${port}${server.subscriptionsPath}`
+    );
   });
 });
