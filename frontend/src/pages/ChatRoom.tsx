@@ -1,17 +1,13 @@
 import { useQuery, useSubscription, useMutation } from "@apollo/react-hooks";
 import {
   createStyles,
-  IconButton,
-  InputAdornment,
   LinearProgress,
   List,
   makeStyles,
   Paper,
-  TextField,
   Theme
 } from "@material-ui/core";
-import { SendOutlined } from "@material-ui/icons";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { Message } from "../components";
 import { ALL_MESSAGES, ME } from "../graphql/queries";
 import {
@@ -22,8 +18,6 @@ import {
 import {
   AllMessagesQuery,
   NewMessagesSubscription,
-  SendMessageMutation,
-  SendMessageMutationVariables,
   MeQuery,
   DeletedMessageFromCacheMutation,
   DeletedMessageFromCacheMutationVariables,
@@ -33,7 +27,6 @@ import {
   EditMessageInCacheMutationVariables
 } from "../typescript/codegen";
 import {
-  SEND_MESSAGE,
   DELETE_MESSAGE_FROM_CACHE,
   EDIT_MESSAGE_IN_CACHE
 } from "../graphql/mutations";
@@ -61,11 +54,6 @@ const ChatRoom: React.FC = () => {
   const { data: currentUser } = useQuery<MeQuery>(ME);
   const classes = useStyles();
   const messageEnd = useRef<HTMLDivElement>(null);
-  const [message, setMessage] = useState("");
-  const [sendMessage, { loading: sendingMessage }] = useMutation<
-    SendMessageMutation,
-    SendMessageMutationVariables
-  >(SEND_MESSAGE, { variables: { messageText: message } });
   const [deleteMessageFromCache] = useMutation<
     DeletedMessageFromCacheMutation,
     DeletedMessageFromCacheMutationVariables
