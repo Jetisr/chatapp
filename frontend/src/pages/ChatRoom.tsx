@@ -35,16 +35,12 @@ import SendMessageField from "../components/SendMessageField";
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      maxHeight: "100vh",
+      maxHeight: "calc(100vh - 56px)",
       overflowY: "auto",
       position: "relative"
     },
     newMessageField: {
       width: "100%"
-    },
-    newMessageContainer: {
-      position: "sticky",
-      bottom: 0
     }
   })
 );
@@ -110,27 +106,29 @@ const ChatRoom: React.FC = () => {
   if (loading) return <LinearProgress />;
 
   return (
-    <Paper className={classes.root}>
-      <List>
-        {data &&
-          data.allMessages.map(m => (
-            <Message
-              key={m.id}
-              message={m}
-              isOwner={
-                (currentUser &&
-                  currentUser.me &&
-                  currentUser.me.username === m.user.username) ||
-                false
-              }
-            />
-          ))}
-        <div ref={messageEnd} />
-      </List>
-      <Paper className={classes.newMessageContainer}>
+    <>
+      <Paper className={classes.root}>
+        <List>
+          {data &&
+            data.allMessages.map(m => (
+              <Message
+                key={m.id}
+                message={m}
+                isOwner={
+                  (currentUser &&
+                    currentUser.me &&
+                    currentUser.me.username === m.user.username) ||
+                  false
+                }
+              />
+            ))}
+          <div ref={messageEnd} />
+        </List>
+      </Paper>
+      <Paper>
         <SendMessageField />
       </Paper>
-    </Paper>
+    </>
   );
 };
 
