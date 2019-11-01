@@ -88,10 +88,16 @@ const cache = new InMemoryCache({
 });
 
 const uploadLink = createUploadLink({
-  uri: "http://localhost:4000/graphql"
+  uri:
+    process.env.NODE_ENV === "production"
+      ? "https://jetchatapp.herokuapp.com/graphql"
+      : "http://localhost:4000/graphql"
 });
 const wsLink = new WebSocketLink({
-  uri: "ws://localhost:4000/graphql",
+  uri:
+    process.env.NODE_ENV === "production"
+      ? "wss://jetchatapp.herokuapp.com/graphql"
+      : "ws://localhost:4000/graphql",
   options: {
     timeout: 30000,
     reconnect: true
