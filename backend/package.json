@@ -5,10 +5,11 @@
   "license": "MIT",
   "scripts": {
     "start:dev": "nodemon --exec ts-node src/index.ts",
-    "start:prod": "NODE_ENV=production node build/index.js",
+    "start:prod": "NODE_ENV=production node ./build/index.js",
     "build": "rm -rf ./build && tsc",
     "start": "npm-run-all build start:prod",
-    "codegen": "graphql-codegen --config codegen.json"
+    "codegen": "graphql-codegen --config codegen.json",
+    "heroku-postbuild": ""
   },
   "dependencies": {
     "apollo-datasource": "^0.6.3",
