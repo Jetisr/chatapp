@@ -37,6 +37,7 @@ import {
   DELETE_MESSAGE_FROM_CACHE,
   EDIT_MESSAGE_IN_CACHE
 } from "../graphql/mutations";
+import SendMessageField from "../components/SendMessageField";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -139,37 +140,7 @@ const ChatRoom: React.FC = () => {
         <div ref={messageEnd} />
       </List>
       <Paper className={classes.newMessageContainer}>
-        <TextField
-          label="Send a message"
-          variant="filled"
-          value={message}
-          onChange={({ target }) => {
-            setMessage(target.value);
-          }}
-          onKeyDown={({ key }) => {
-            if (key === "Enter") {
-              sendMessage();
-              setMessage("");
-            }
-          }}
-          className={classes.newMessageField}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  color="primary"
-                  disabled={sendingMessage}
-                  onClick={() => {
-                    sendMessage();
-                    setMessage("");
-                  }}
-                >
-                  <SendOutlined />
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
+        <SendMessageField />
       </Paper>
     </Paper>
   );
