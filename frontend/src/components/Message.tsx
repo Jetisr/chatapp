@@ -6,10 +6,17 @@ import {
   ListItemSecondaryAction,
   ListItemText,
   ListItemAvatar,
-  Avatar
+  Avatar,
+  Menu,
+  MenuItem,
+  ListItemIcon
 } from "@material-ui/core";
-import { DeleteOutline, EditOutlined } from "@material-ui/icons";
-import React from "react";
+import {
+  DeleteOutline,
+  EditOutlined,
+  MoreVertOutlined
+} from "@material-ui/icons";
+import React, { useRef, useState } from "react";
 import {
   DELETE_MESSAGE,
   DELETE_MESSAGE_FROM_CACHE,
@@ -44,10 +51,13 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
     EditMessageMutation,
     EditMessageMutationVariables
   >(EDIT_MESSAGE);
+  const moreIconRef = useRef<HTMLButtonElement | null>(null);
+  const [open, setOpen] = useState(false);
 
   const { confirm, form } = useModal();
 
   const deleteMessage = async () => {
+    setOpen(false);
     if (
       await confirm({
         title: "Delete Message?",
@@ -66,6 +76,7 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
   };
 
   const editMessage = () => {
+    setOpen(false);
     form({
       title: "Edit Message",
       initialValue: message.messageText,
@@ -78,6 +89,10 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
         });
       }
     });
+  };
+
+  const handleMenuClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -96,19 +111,33 @@ const Message: React.FC<Props> = ({ message, isOwner }) => {
               <IconButton
                 color="primary"
                 edge="end"
-                aria-label="edit"
-                onClick={editMessage}
+                aria-label="options"
+                ref={moreIconRef}
+                onClick={() => {
+                  setOpen(true);
+                }}
               >
-                <EditOutlined />
+                <MoreVertOutlined />
               </IconButton>
-              <IconButton
-                color="primary"
-                edge="end"
-                aria-label="delete"
-                onClick={deleteMessage}
+              <Menu
+                anchorEl={moreIconRef.current}
+                keepMounted
+                open={open}
+                onClose={handleMenuClose}
               >
-                <DeleteOutline />
-              </IconButton>
+                <MenuItem onClick={editMessage}>
+                  <ListItemIcon>
+                    <EditOutlined color="primary" fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Edit" />
+                </MenuItem>
+                <MenuItem onClick={deleteMessage}>
+                  <ListItemIcon>
+                    <DeleteOutline fontSize="small" color="primary" />
+                  </ListItemIcon>
+                  <ListItemText primary="Delete" />
+                </MenuItem>
+              </Menu>
             </ListItemSecondaryAction>
           </>
         )}
