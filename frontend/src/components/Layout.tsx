@@ -48,7 +48,7 @@ const Layout: React.FC = ({ children }) => {
 
   return (
     <>
-      <AppBar position="sticky">
+      <AppBar position="fixed">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             Chat App
